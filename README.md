@@ -1,4 +1,4 @@
 LVR
 ===
 
-repozitorij za predmet logika v računalništvu
+Repozitorij za predmet logika v računalništvu.
