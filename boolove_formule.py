@@ -47,6 +47,36 @@ class AND:
                 return False
             k+=1
         return True
+    def simplify(self):
+        prvi = self.seznam[0]
+        drugi = self.seznam[1]
+        # p AND p = p
+        if prvi==drugi:
+            return prvi
+        # p AND T = p, T AND p = p
+        elif isinstance(prvi, Tru):
+            return drugi
+        elif isinstance(drugi, Tru):
+            return prvi
+        # p AND F = F
+        elif isinstance(prvi,Fls) or isinstance(drugi,Fls):
+            return Fls()
+        # p AND ¬ p = F, ¬ p AND p = F
+        neg_ime=""
+        temp=""
+        if isinstance(prvi, NOT):
+            neg_ime=prvi.vrednost
+            temp=drugi
+        if isinstance (drugi,NOT):
+            neg_ime=drugi.vrednost
+            temp=prvi
+        if neg_ime==temp:
+            return Fls()
+        # ¬ p AND ¬ q = ¬ (p AND q)
+        # p AND (p OR q) = p
+        # (p OR r) AND (q OR r) = (p AND q) OR r
+            
+        
 
 #razred za predstavitev OR
 class OR:
@@ -73,6 +103,9 @@ class OR:
             if i is True:
                 return True        
         return False
+    def simplify(self):
+        #podobno kot pri AND
+        pass
         
 #razred za predstavitev NEG
 class NOT():
@@ -85,6 +118,9 @@ class NOT():
         if i is not False and i is not True:
             i = i.evaluate()
         return not i
+    def simplify(self):
+        #potrebno naresti
+        pass
 
 #razred za predstavitev spremenljivke
 class Var:
@@ -92,60 +128,76 @@ class Var:
         self.ime=ime
     def __str__(self):
         return self.ime
+    def __eq__(self, ime2):
+        if self.ime==ime2:
+            return True
+        return False
+    def __hash__(self):
+        return id(self)
 
 
 
 
 #test izpisov
-print "OSNOVNI IZPISI: true false var not and or"
-print Tru()
-print Fls()
-p = Var("p")
-print p
-print NOT(p)
-print AND([p,p])
-print OR([p,p])
-print
+##print "OSNOVNI IZPISI: true false var not and or"
+##print Tru()
+##print Fls()
+##p = Var("p")
+##print p
+##print NOT(p)
+##print AND([p,p])
+##print OR([p,p])
+##print
+##
+##print "SESTAVLJENA FORMULA"
+##f = AND(["p", "q", OR(["p","q"])])
+##print f
+##print Tru()
+##
+##q = Var("q")
+##p = Var("p")
+##r = Var("r")
+##
+##formula = NOT(OR([AND([NOT(q), p, r]), NOT(OR([q,NOT(p),Tru()]))]))
+##print formula
+##print
+##
+###test prazen seznam vrne false
+##print "PRAZEN SEZNAM"
+##o = OR([])
+##print o
+##print
+##
+###testni primeri za ocenjevanje vrednosti
+##print "OCENJEVANJE VREDNOSTI"
+###1.
+##x=Var("x")
+##y=Var("y")
+##v = {x: False, y: True}
+##f=OR([AND([NOT(NOT(v[x])),v[y]]),NOT(v[x])])
+##print "Ocena f:"
+##print f
+##print f.evaluate()
+##print
+##
+###2.
+##p=Var("p")
+##q=Var("q")
+##r=Var("r")
+##u = {p: True, q: False, r: True}
+##f1 = AND([OR([u[p],u[q]]),OR([u[q],u[r]]),OR([u[r],u[p]]),NOT(AND([u[p],u[q]])),NOT(AND([u[q],u[r]])),NOT(AND([u[r],u[p]]))])
+####f1 = AND([OR([u[p],u[q]]),OR([u[q],u[r]]),OR([u[r],u[p]]),NOT(AND([u[p],u[q]])),NOT(AND([u[q],u[r]])),AND([u[r],u[p]])])
+##print "Ocena f1:"
+##print f1
+##print f1.evaluate()
+##print
 
-print "SESTAVLJENA FORMULA"
-f = AND(["p", "q", OR(["p","q"])])
-print f
-print Tru()
-
-q = Var("q")
-p = Var("p")
-r = Var("r")
-
-formula = NOT(OR([AND([NOT(q), p, r]), NOT(OR([q,NOT(p),Tru()]))]))
-print formula
-print
-
-#test prazen seznam vrne false
-print "PRAZEN SEZNAM"
-o = OR([])
-print o
-print
-
-#testni primeri za ocenjevanje vrednosti
-print "OCENJEVANJE VREDNOSTI"
-#1.
-x=Var("x")
-y=Var("y")
-v = {x: False, y: True}
-f=OR([AND([NOT(NOT(v[x])),v[y]]),NOT(v[x])])
-print "Ocena f:"
-print f
-print f.evaluate()
-print
-
-#2.
+#testni primer za poenostavljanje
 p=Var("p")
 q=Var("q")
 r=Var("r")
-u = {p: True, q: False, r: True}
-f1 = AND([OR([u[p],u[q]]),OR([u[q],u[r]]),OR([u[r],u[p]]),NOT(AND([u[p],u[q]])),NOT(AND([u[q],u[r]])),NOT(AND([u[r],u[p]]))])
-##f1 = AND([OR([u[p],u[q]]),OR([u[q],u[r]]),OR([u[r],u[p]]),NOT(AND([u[p],u[q]])),NOT(AND([u[q],u[r]])),AND([u[r],u[p]])])
-print "Ocena f1:"
-print f1
-print f1.evaluate()
-print
+
+f2 = AND([p,Fls()])
+print "poenostavitev f2:"
+print f2
+print f2.simplify()
