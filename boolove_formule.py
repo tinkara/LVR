@@ -11,14 +11,14 @@ class Tru():
     def __init__(self):
         pass
     def __str__(self):
-        return 'T'
+        return "True"
 
 #razred za predstavitev konstante F
 class Fls():
     def __init__(self):
         pass
     def __str__(self):
-        return 'F'
+        return "False"
 
 #razred za predstavitev AND
 class AND:
@@ -37,7 +37,16 @@ class AND:
                 else:
                     s = s + str(i) + ' A '
                 k += 1
-        return '(' + s + ')'        
+        return '(' + s + ')'
+    def evaluate(self):
+        k=1
+        for i in self.seznam:
+            if i is not False and i is not True:
+                i = i.evaluate()
+            if i is False:
+                return False
+            k+=1
+        return True
 
 #razred za predstavitev OR
 class OR:
@@ -56,14 +65,26 @@ class OR:
                 else:
                     s = s + str(i) + ' V '
                 k += 1
-        return '(' + s + ')' 
+        return '(' + s + ')'
+    def evaluate(self):
+        for i in self.seznam:
+            if i is not False and i is not True:
+                i = i.evaluate()
+            if i is True:
+                return True        
+        return False
         
 #razred za predstavitev NEG
-class NOT:
-    def __init__(self, ime):
-        self.ime=ime
+class NOT():
+    def __init__(self, vrednost):
+        self.vrednost=vrednost
     def __repr__(self):
-        return '¬ ' + str(self.ime)
+        return '¬ ' + str(self.vrednost)
+    def evaluate(self):
+        i = self.vrednost   
+        if i is not False and i is not True:
+            i = i.evaluate()
+        return not i
 
 #razred za predstavitev spremenljivke
 class Var:
@@ -75,11 +96,18 @@ class Var:
 
 
 
-#testni primeri
-v = Var("p")
-print v
-n = NOT(v)
-print n
+#test izpisov
+print "OSNOVNI IZPISI: true false var not and or"
+print Tru()
+print Fls()
+p = Var("p")
+print p
+print NOT(p)
+print AND([p,p])
+print OR([p,p])
+print
+
+print "SESTAVLJENA FORMULA"
 f = AND(["p", "q", OR(["p","q"])])
 print f
 print Tru()
@@ -90,10 +118,34 @@ r = Var("r")
 
 formula = NOT(OR([AND([NOT(q), p, r]), NOT(OR([q,NOT(p),Tru()]))]))
 print formula
+print
 
-f = OR(Var("p"),Var("q"))(OR(Var("q"),Var("r"))
-print f
-
+#test prazen seznam vrne false
+print "PRAZEN SEZNAM"
 o = OR([])
 print o
+print
 
+#testni primeri za ocenjevanje vrednosti
+print "OCENJEVANJE VREDNOSTI"
+#1.
+x=Var("x")
+y=Var("y")
+v = {x: False, y: True}
+f=OR([AND([NOT(NOT(v[x])),v[y]]),NOT(v[x])])
+print "Ocena f:"
+print f
+print f.evaluate()
+print
+
+#2.
+p=Var("p")
+q=Var("q")
+r=Var("r")
+u = {p: True, q: False, r: True}
+f1 = AND([OR([u[p],u[q]]),OR([u[q],u[r]]),OR([u[r],u[p]]),NOT(AND([u[p],u[q]])),NOT(AND([u[q],u[r]])),NOT(AND([u[r],u[p]]))])
+##f1 = AND([OR([u[p],u[q]]),OR([u[q],u[r]]),OR([u[r],u[p]]),NOT(AND([u[p],u[q]])),NOT(AND([u[q],u[r]])),AND([u[r],u[p]])])
+print "Ocena f1:"
+print f1
+print f1.evaluate()
+print
