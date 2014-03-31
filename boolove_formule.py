@@ -1,8 +1,8 @@
 ###################################################################
-#                            VAJA 1                               #
-#  naloga 1 - podatkovna struktura za Boolove formule             #
-#  naloga 2 - funkcija/metoda, ki vrne vrednost Boolove formule   #
-#  naloga 3 - funkcija/metoda za poenostavljanje izrazov          #
+# VAJA 1 #
+# naloga 1 - podatkovna struktura za Boolove formule #
+# naloga 2 - funkcija/metoda, ki vrne vrednost Boolove formule #
+# naloga 3 - funkcija/metoda za poenostavljanje izrazov #
 ###################################################################
 
 
@@ -61,7 +61,7 @@ class AND:
         # p AND F = F
         elif isinstance(prvi,Fls) or isinstance(drugi,Fls):
             return Fls()
-        # p AND � p = F, � p AND p = F
+        # p AND ¬ p = F, ¬ p AND p = F
         neg_ime=""
         temp=""
         if isinstance(prvi, NOT):
@@ -72,9 +72,23 @@ class AND:
             temp=prvi
         if neg_ime==temp:
             return Fls()
-        # � p AND � q = � (p AND q)
+        # ¬ p AND ¬ q = ¬ (p OR q)
+        if isinstance(prvi, NOT) and isinstance(drugi, NOT):
+        	return NOT(OR(prvi,drugi))
         # p AND (p OR q) = p
+        if isinstance(drugi, OR) and (drugi.seznam[0]=prvi or drugi.seznam[1]=prvi):
+        	return prvi
+        elif isinstance(prvi, OR) and (prvi.seznam[0]=drugi or prvi.seznam[1]=drugi):
         # (p OR r) AND (q OR r) = (p AND q) OR r
+        if isinstance (prvi, OR) and isinstance(drugi, OR):
+        	if prvi.seznam[0]=drugi.seznam[0]:
+        		return OR(AND(prvi.seznam[1],drugi.seznam[1]),prvi.seznam[0])
+        	elif prvi.seznam[0]=drugi.seznam[1]:
+        		return OR(AND(prvi.seznam[1],drugi.seznam[0]),prvi.seznam[0])
+        	elif prvi.seznam[1]=drugi.seznam[0]:
+        		return OR(AND(prvi.seznam[0],drugi.seznam[1]),prvi.seznam[1])
+        	elif prvi.seznam[1]=drugi.seznam[1]:
+        		return OR(AND(prvi.seznam[0],drugi.seznam[0]),prvi.seznam[1])
             
         
 
@@ -101,10 +115,51 @@ class OR:
             if i is not False and i is not True:
                 i = i.evaluate()
             if i is True:
-                return True        
+                return True
         return False
     def simplify(self):
-        #podobno kot pri AND
+        prvi = self.seznam[0]
+        drugi = self.seznam[1]
+        # p OR p = p
+        if prvi==drugi:
+            return prvi
+        # p OR T = T, T OR p = T
+        elif isinstance(prvi, Tru) or isinstance(drugi, Tru):
+            return Tru()
+        # p OR F = p
+        elif isinstance(prvi,Fls):
+        	return prvi
+        elif isinstance(drugi,Fls):
+            return drugi
+        # p OR ¬ p = T, ¬ p OR p = T
+        neg_ime=""
+        temp=""
+        if isinstance(prvi, NOT):
+            neg_ime=prvi.vrednost
+            temp=drugi
+        if isinstance (drugi,NOT):
+            neg_ime=drugi.vrednost
+            temp=prvi
+        if neg_ime==temp:
+            return Tru()
+        # ¬ p OR ¬ q = ¬ (p AND q)
+        if isinstance(prvi, NOT) and isinstance(drugi, NOT):
+        	return NOT(AND(prvi,drugi))
+        # p OR (p AND q) = p
+        if isinstance(drugi, AND) and (drugi.seznam[0]=prvi or drugi.seznam[1]=prvi):
+        	return prvi
+        elif isinstance(prvi, AND) and (prvi.seznam[0]=drugi or prvi.seznam[1]=drugi):
+        # (p AND r) OR (q AND r) = (p OR q) AND r
+        if isinstance (prvi, OR) and isinstance(drugi, OR):
+        	if prvi.seznam[0]=drugi.seznam[0]:
+        		return AND(OR(prvi.seznam[1],drugi.seznam[1]),prvi.seznam[0])
+        	elif prvi.seznam[0]=drugi.seznam[1]:
+        		return AND(OR(prvi.seznam[1],drugi.seznam[0]),prvi.seznam[0])
+        	elif prvi.seznam[1]=drugi.seznam[0]:
+        		return AND(OR(prvi.seznam[0],drugi.seznam[1]),prvi.seznam[1])
+        	elif prvi.seznam[1]=drugi.seznam[1]:
+        		return AND(OR(prvi.seznam[0],drugi.seznam[0]),prvi.seznam[1])
+        
         pass
         
 #razred za predstavitev NEG
@@ -112,14 +167,16 @@ class NOT():
     def __init__(self, vrednost):
         self.vrednost=vrednost
     def __repr__(self):
-        return '� ' + str(self.vrednost)
+        return '¬ ' + str(self.vrednost)
     def evaluate(self):
-        i = self.vrednost   
+        i = self.vrednost
         if i is not False and i is not True:
             i = i.evaluate()
         return not i
     def simplify(self):
-        #potrebno naresti
+    	# TEST: bo delovalo, če je x negacij zaporedoma??
+       	if isinstance(self.seznam, NOT):
+        	return self.seznam.seznam
         pass
 
 #razred za predstavitev spremenljivke
