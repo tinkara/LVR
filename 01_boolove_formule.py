@@ -1,10 +1,15 @@
 ###################################################################
-# VAJA 1 #
-# naloga 1 - podatkovna struktura za Boolove formule #
-# naloga 2 - funkcija/metoda, ki vrne vrednost Boolove formule #
-# naloga 3 - funkcija/metoda za poenostavljanje izrazov #
+# VAJA 1 - osnovne strukture in funkcije
+# naloga 1 - podatkovna struktura za Boolove formule
+# naloga 2 - funkcija/metoda, ki vrne vrednost Boolove formule
+# naloga 3 - funkcija/metoda za poenostavljanje izrazov
 ###################################################################
 
+# Zdruzljivost za Python 2 in Python 3
+try:
+    basestring
+except NameError:
+    basestring = str
 
 #razred za predstavitev konstante T
 class Tru():
@@ -75,19 +80,20 @@ class AND:
         # ¬ p AND ¬ q = ¬ (p OR q)
         if isinstance(prvi, NOT) and isinstance(drugi, NOT):
         	return NOT(OR(prvi,drugi))
-        # p AND (p OR q) = p
-        if isinstance(drugi, OR) and (drugi.seznam[0]=prvi or drugi.seznam[1]=prvi):
+        # p AND (p OR q) = p, (p OR q) AND p = p
+        if isinstance(drugi, OR) and (drugi.seznam[0]==prvi or drugi.seznam[1]==prvi):
         	return prvi
-        elif isinstance(prvi, OR) and (prvi.seznam[0]=drugi or prvi.seznam[1]=drugi):
+        elif isinstance(prvi, OR) and (prvi.seznam[0]==drugi or prvi.seznam[1]==drugi):
+            return drugi
         # (p OR r) AND (q OR r) = (p AND q) OR r
         if isinstance (prvi, OR) and isinstance(drugi, OR):
-        	if prvi.seznam[0]=drugi.seznam[0]:
+        	if prvi.seznam[0]==drugi.seznam[0]:
         		return OR(AND(prvi.seznam[1],drugi.seznam[1]),prvi.seznam[0])
-        	elif prvi.seznam[0]=drugi.seznam[1]:
+        	elif prvi.seznam[0]==drugi.seznam[1]:
         		return OR(AND(prvi.seznam[1],drugi.seznam[0]),prvi.seznam[0])
-        	elif prvi.seznam[1]=drugi.seznam[0]:
+        	elif prvi.seznam[1]==drugi.seznam[0]:
         		return OR(AND(prvi.seznam[0],drugi.seznam[1]),prvi.seznam[1])
-        	elif prvi.seznam[1]=drugi.seznam[1]:
+        	elif prvi.seznam[1]==drugi.seznam[1]:
         		return OR(AND(prvi.seznam[0],drugi.seznam[0]),prvi.seznam[1])
             
         
@@ -145,22 +151,22 @@ class OR:
         # ¬ p OR ¬ q = ¬ (p AND q)
         if isinstance(prvi, NOT) and isinstance(drugi, NOT):
         	return NOT(AND(prvi,drugi))
-        # p OR (p AND q) = p
-        if isinstance(drugi, AND) and (drugi.seznam[0]=prvi or drugi.seznam[1]=prvi):
+        # p OR (p AND q) = p, (p AND q) OR p = p
+        if isinstance(drugi, AND) and (drugi.seznam[0]==prvi or drugi.seznam[1]==prvi):
         	return prvi
-        elif isinstance(prvi, AND) and (prvi.seznam[0]=drugi or prvi.seznam[1]=drugi):
+        elif isinstance(prvi, AND) and (prvi.seznam[0]==drugi or prvi.seznam[1]==drugi):
+            return drugi
         # (p AND r) OR (q AND r) = (p OR q) AND r
         if isinstance (prvi, OR) and isinstance(drugi, OR):
-        	if prvi.seznam[0]=drugi.seznam[0]:
+        	if prvi.seznam[0]==drugi.seznam[0]:
         		return AND(OR(prvi.seznam[1],drugi.seznam[1]),prvi.seznam[0])
-        	elif prvi.seznam[0]=drugi.seznam[1]:
+        	elif prvi.seznam[0]==drugi.seznam[1]:
         		return AND(OR(prvi.seznam[1],drugi.seznam[0]),prvi.seznam[0])
-        	elif prvi.seznam[1]=drugi.seznam[0]:
+        	elif prvi.seznam[1]==drugi.seznam[0]:
         		return AND(OR(prvi.seznam[0],drugi.seznam[1]),prvi.seznam[1])
-        	elif prvi.seznam[1]=drugi.seznam[1]:
+        	elif prvi.seznam[1]==drugi.seznam[1]:
         		return AND(OR(prvi.seznam[0],drugi.seznam[0]),prvi.seznam[1])
         
-        pass
         
 #razred za predstavitev NEG
 class NOT():
@@ -174,10 +180,12 @@ class NOT():
             i = i.evaluate()
         return not i
     def simplify(self):
-    	# TEST: bo delovalo, če je x negacij zaporedoma??
-       	if isinstance(self.seznam, NOT):
-        	return self.seznam.seznam
-        pass
+    	# TEST: bo delovalo, ce je x negacij zaporedoma??
+##    	ne dela
+##       	if isinstance(self.seznam, NOT):
+##            return self.seznam.seznam
+    	pass
+        
 
 #razred za predstavitev spremenljivke
 class Var:
