@@ -1,9 +1,13 @@
 ###################################################################
 # VAJA 1 - osnovne strukture in funkcije
+#
 # naloga 1 - podatkovna struktura za Boolove formule
 # naloga 2 - funkcija/metoda, ki vrne vrednost Boolove formule
 # naloga 3 - funkcija/metoda za poenostavljanje izrazov
 ###################################################################
+
+#!/usr/bin/python
+# -*- coding: utf-8 -*-
 
 # Zdruzljivost za Python 2 in Python 3
 try:
@@ -66,7 +70,7 @@ class AND:
         # p AND F = F
         elif isinstance(prvi,Fls) or isinstance(drugi,Fls):
             return Fls()
-        # p AND ¬ p = F, ¬ p AND p = F
+        # p AND NOT p = F, NOT p AND p = F
         neg_ime=""
         temp=""
         if isinstance(prvi, NOT):
@@ -77,7 +81,7 @@ class AND:
             temp=prvi
         if neg_ime==temp:
             return Fls()
-        # ¬ p AND ¬ q = ¬ (p OR q)
+        # NOT p AND NOT q = NOT (p OR q)
         if isinstance(prvi, NOT) and isinstance(drugi, NOT):
         	return NOT(OR(prvi,drugi))
         # p AND (p OR q) = p, (p OR q) AND p = p
@@ -137,7 +141,7 @@ class OR:
         	return prvi
         elif isinstance(drugi,Fls):
             return drugi
-        # p OR ¬ p = T, ¬ p OR p = T
+        # p OR NOT p = T, NOT p OR p = T
         neg_ime=""
         temp=""
         if isinstance(prvi, NOT):
@@ -148,7 +152,7 @@ class OR:
             temp=prvi
         if neg_ime==temp:
             return Tru()
-        # ¬ p OR ¬ q = ¬ (p AND q)
+        # NOT p OR NOT q = NOT (p AND q)
         if isinstance(prvi, NOT) and isinstance(drugi, NOT):
         	return NOT(AND(prvi,drugi))
         # p OR (p AND q) = p, (p AND q) OR p = p
@@ -173,7 +177,7 @@ class NOT():
     def __init__(self, vrednost):
         self.vrednost=vrednost
     def __repr__(self):
-        return '¬ ' + str(self.vrednost)
+        return 'NOT ' + str(self.vrednost)
     def evaluate(self):
         i = self.vrednost
         if i is not False and i is not True:
@@ -258,11 +262,11 @@ class Var:
 ##print
 
 #testni primer za poenostavljanje
-p=Var("p")
-q=Var("q")
-r=Var("r")
-
-f2 = AND([p,Fls()])
-print "poenostavitev f2:"
-print f2
-print f2.simplify()
+##p=Var("p")
+##q=Var("q")
+##r=Var("r")
+##
+##f2 = AND([p,Fls()])
+##print "poenostavitev f2:"
+##print f2
+##print f2.simplify()
