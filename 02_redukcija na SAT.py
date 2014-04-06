@@ -17,15 +17,64 @@ try:
 except NameError:
     basestring = str
 
-def barvanje_grafa():
-    pass
+# BARVANJE GRAFA
+# parameter graf: vhodni graf, je dan kot seznam povezav
+# parameter c: je stevilo barv, s katerimi zelimo pobarvati graf
+def barvanje_grafa(graf, c):
+    formula=[]
+
+    # vozlisca pobarvana z vsaj eno barvo - And1 in Or1
+    # vozlisca pobarvana z najvec eno barvo - And2, And22 in Not2
+    pregledani=[]
+    And1 = bool.AND([])
+    And2 = bool.AND([])
+    for e in graf:
+        for i in e:
+            if i not in pregledani:
+                pregledani.append(i)
+                Or1 = bool.OR([])
+                And22 = bool.AND([])
+                for k in range(c):
+                    C_ik = "C"+i+str(k+1)
+                    var_k = bool.Var(C_ik)
+                    Or1.seznam.append(var_k)
+                    l=k+1
+                    while l<c:
+                        C_il = "C"+i+str(l+1)
+                        var_l = bool.Var(C_il)
+                        Not2 = bool.NOT(bool.AND([var_k, var_l]))
+                        And22.seznam.append(Not2)
+                        l += 1
+                And1.seznam.append(Or1)
+                And2.seznam.append(And22)
+    formula.append(And1)
+    formula.append(And2)
+                    
+    # dve povezani vozlisci nista iste barve - And3, And32 in Not3
+    And3 = bool.AND([])
+    for e in graf:
+        And32 = bool.AND([])
+        i = e[0]
+        j = e[1]
+        for k in range(c):
+            C_ik = "C"+i+str(k+1)
+            C_jk = "C"+j+str(k+1)
+            var_ik = bool.Var(C_ik)
+            var_jk = bool.Var(C_jk)
+            And32.seznam.append(bool.AND([var_ik,var_jk]))
+        Not3 = bool.NOT(And32)
+        And3.seznam.append(Not3)
+    formula.append(And3)
+    
+    return formula
 
 
-#primer - cikel na 5 tockah, ali ga lahko pobarvamo s 3 barvami
-V=["a","b","c","d","e"]
-E=[["a","b"],["b","c"],["c","d"],["d","e"],["a","e"]]
-k=3
-
+#primer - cikel na 5 ali 3 tockah, ali ga lahko pobarvamo s 3 barvami
+##E=[["a","b"],["b","c"],["c","d"],["d","e"],["a","e"]]
+E=[['a','b'],['b','c'],['c','a']]
+c=3
+print E
+print barvanje_grafa(E, c)
 
 
 #Sudoku
@@ -52,7 +101,8 @@ def Sudoku(sud):
 					for l in range(9):
 						#nasa spremenljivka je x_ijk, ki jo tu predstavimo z i_j_k_, kjer so v _ vrednosti od 1-9 in predstavljajo
 						#(i,j) koordinata v sudoku, k stevilo v polju
-						var=bool.Var("i"+str(i+1)+"j"+str(j+1)+"k"+str(k+1))	
+						var=bool.Var("i"+str(i+1)+"j"+str(j+1)+"k"+str(k+1))
+						
 						And.seznam.append(var if k==l else bool.NOT(var))
 					Or.seznam.append(And)
 				seznam.append(Or)
@@ -86,16 +136,16 @@ def Sudoku(sud):
 	return bool.AND(seznam)
 	
 sudo = \
-[[None, '8', None, '1', '6', None, None, None, '7'],
- ['1', None, '7', '4', None, '3', '6', None, None],
- ['3', None, None, '5', None, None, '4', '2', None],
- [None, '9', None, None, '3', '2', '7', None, '4'],
+[[None, '8',  None, '1',  '6',  None, None, None, '7'],
+ ['1',  None, '7',  '4',  None, '3',  '6',  None, None],
+ ['3',  None, None, '5',  None, None, '4', '2',   None],
+ [None, '9',  None, None, '3',  '2',  '7',  None, '4'],
  [None, None, None, None, None, None, None, None, None],
- ['2', None, '4', '8', '1', None, None, '6', None],
- [None, '4', '1', None, None, '8', None, None, '6'],
- [None, None, '6', '7', None, '1', '9', None, '3'],
- ['7', None, None, None, '9', '6', None, '4', None]]
+ ['2',  None, '4',  '8',  '1',  None, None, '6',  None],
+ [None, '4',  '1', None,  None, '8',  None, None, '6'],
+ [None, None, '6', '7',   None, '1', '9',   None, '3'],
+ ['7',  None, None, None, '9',  '6',  None, '4',  None]]
 
 sudoku_formula = Sudoku(sudo)
-
-print sudoku_formula.__repr__()
+##
+##print sudoku_formula.__repr__()
