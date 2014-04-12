@@ -189,6 +189,16 @@ class NOT():
 ##       	if isinstance(self.seznam, NOT):
 ##            return self.seznam.seznam
     	pass
+
+#razred za predstavitev XOR
+class XOR:
+    def __init__(self, p, q):
+        self.p=p
+        self.q=q
+    def __repr__(self):
+        return AND([OR([self.p,self.q]),NOT(AND([self.p,self.q]))]).__repr__()
+    def evaluate(self):
+        return AND([OR([self.p,self.q]),NOT(AND([self.p,self.q]))]).evaluate()
         
 
 #razred za predstavitev spremenljivke
@@ -203,9 +213,6 @@ class Var:
         return False
     def __hash__(self):
         return id(self)
-
-
-
 
 #test izpisov
 ##print "OSNOVNI IZPISI: true false var not and or"
@@ -249,17 +256,23 @@ class Var:
 ##print f.evaluate()
 ##print
 ##
-###2.
+#2.
 ##p=Var("p")
 ##q=Var("q")
 ##r=Var("r")
 ##u = {p: True, q: False, r: True}
 ##f1 = AND([OR([u[p],u[q]]),OR([u[q],u[r]]),OR([u[r],u[p]]),NOT(AND([u[p],u[q]])),NOT(AND([u[q],u[r]])),NOT(AND([u[r],u[p]]))])
-####f1 = AND([OR([u[p],u[q]]),OR([u[q],u[r]]),OR([u[r],u[p]]),NOT(AND([u[p],u[q]])),NOT(AND([u[q],u[r]])),AND([u[r],u[p]])])
+##f1 = AND([OR([u[p],u[q]]),OR([u[q],u[r]]),OR([u[r],u[p]]),NOT(AND([u[p],u[q]])),NOT(AND([u[q],u[r]])),AND([u[r],u[p]])])
 ##print "Ocena f1:"
 ##print f1
 ##print f1.evaluate()
 ##print
+
+#3.
+##f2=XOR(u[p], u[r])
+##print f2
+##print f2.evaluate()
+
 
 #testni primer za poenostavljanje
 ##p=Var("p")
