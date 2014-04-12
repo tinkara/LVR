@@ -73,8 +73,8 @@ def barvanje_grafa(graf, c):
 ##E=[["a","b"],["b","c"],["c","d"],["d","e"],["a","e"]]
 E=[['a','b'],['b','c'],['c','a']]
 c=3
-print E
-print barvanje_grafa(E, c)
+##print E
+##print barvanje_grafa(E, c)
 
 
 #Sudoku
@@ -136,16 +136,58 @@ def Sudoku(sud):
 	return bool.AND(seznam)
 	
 sudo = \
-[[None, '8',  None, '1',  '6',  None, None, None, '7'],
+[[None, '8',  None, '1',  '6',  None, None, None, '7' ],
  ['1',  None, '7',  '4',  None, '3',  '6',  None, None],
  ['3',  None, None, '5',  None, None, '4', '2',   None],
- [None, '9',  None, None, '3',  '2',  '7',  None, '4'],
+ [None, '9',  None, None, '3',  '2',  '7',  None, '4' ],
  [None, None, None, None, None, None, None, None, None],
  ['2',  None, '4',  '8',  '1',  None, None, '6',  None],
- [None, '4',  '1', None,  None, '8',  None, None, '6'],
- [None, None, '6', '7',   None, '1', '9',   None, '3'],
+ [None, '4',  '1', None,  None, '8',  None, None, '6' ],
+ [None, None, '6', '7',   None, '1', '9',   None, '3' ],
  ['7',  None, None, None, '9',  '6',  None, '4',  None]]
 
-sudoku_formula = Sudoku(sudo)
+##sudoku_formula = Sudoku(sudo)
 ##
 ##print sudoku_formula.__repr__()
+
+#Hadamardova matrika
+def Hadamardova_matrika(H):
+    n=len(H)
+    if n==1:
+        if H[0]== 1: return True
+        else: return False
+    if n==0 or len(H)%2==1:
+        return False
+
+    formula = []
+    #vrstica i
+    for i in range(n-1):
+        #vrstica j
+        for j in range(i+1, n):
+            xor=[]
+            #xor med dvema vrsticama
+            for k in range(n):
+                prva  = "vr" +str(i)+ "_st"+str(k)
+                druga = "vr" +str(j)+ "_st"+str(k)
+                xor.append(bool.XOR(prva, druga))
+            print xor
+            print
+            #xor, ki ga dobimo zgoraj mora imeti n/2 istih vrednosti
+            
+
+
+
+#primer
+
+H = [ [ 1,  1,  1,  1],
+      [ 1, -1,  1, -1],
+      [ 1,  1, -1, -1],
+      [ 1, -1, -1,  1]]
+
+for i in H:
+    print i
+
+print
+print Hadamardova_matrika(H)
+
+
