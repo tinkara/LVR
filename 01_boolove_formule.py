@@ -199,7 +199,17 @@ class XOR:
         return AND([OR([self.p,self.q]),NOT(AND([self.p,self.q]))]).__repr__()
     def evaluate(self):
         return AND([OR([self.p,self.q]),NOT(AND([self.p,self.q]))]).evaluate()
-        
+
+#razred za predstavitev EKVIVALENCE
+    class EQ:
+        def __init(self,p,q):
+            self.p=p
+            self.q=q
+        def __repr__(self):
+            return AND([OR([NOT(self.p),self.q]),OR(NOT(self.q),self.p)]).__repr__()
+        def evaluate(self):
+            return AND([OR([NOT(self.p),self.q]),OR(NOT(self.q),self.p)]).evaluate()
+            
 
 #razred za predstavitev spremenljivke
 class Var:
