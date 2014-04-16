@@ -99,8 +99,38 @@ class AND:
         		return OR(AND(prvi.seznam[0],drugi.seznam[1]),prvi.seznam[1])
         	elif prvi.seznam[1]==drugi.seznam[1]:
         		return OR(AND(prvi.seznam[0],drugi.seznam[0]),prvi.seznam[1])
-            
-        
+     
+	def flatten(self):
+		if len(self.seznam)==1:
+			return self.seznam[0].flatten()
+		else:
+			sez=[]
+			for a in self.seznam:
+				b=a.flatten()
+				for c in b:
+					if isinstance(c,AND):
+						sez.append(c.seznam)
+					else:
+						sez.append([c])
+			for d in sez:
+				if isinstance(d,OR) and len(d.seznam)==0:
+					return Fls()
+				elif len(sez)==1:
+					return l[0]
+				else:
+					return AND(sez)
+	
+	def cno(self):
+		"konjunktivna normalna oblika"
+		if len(self.seznam)==0:
+			return self
+		elif len(self.seznam)==0:
+			return self.seznam[0].cno()
+		else:
+			func=[]
+			for i in self.seznam:
+				func.append(i.cno())
+			return AND(func).flatten()
 
 #razred za predstavitev OR
 class OR:
@@ -170,6 +200,45 @@ class OR:
         		return AND(OR(prvi.seznam[0],drugi.seznam[1]),prvi.seznam[1])
         	elif prvi.seznam[1]==drugi.seznam[1]:
         		return AND(OR(prvi.seznam[0],drugi.seznam[0]),prvi.seznam[1])
+	def flatten(self):
+		if len(self.seznam)==1:
+			return self.seznam[0].flatten()
+		else:
+			sez=[]
+			for a in self.seznam:
+				b=a.flatten()
+				for c in b:
+					if isinstance(c,OR):
+						sez.append(c.seznam)
+					else:
+						sez.append([c])
+			for d in sez:
+				if isinstance(d,AND) and len(d.seznam)==0:
+					return Tru()
+				elif len(sez)==1:
+					return l[0]
+				else:
+					return OR(sez)
+									
+	def cno(self):
+		"konjunktivna normalna oblika"
+		if len(self.seznam)==0:
+			return self
+		elif len(self.seznam)==0:
+			return self.seznam[0].cno()
+		else:
+			flat=[i.cno() for i in self.flatten().seznam]
+			yes=[i for i in self.seznam if isinstance(i,AND)]
+			no=[i for i in self.seznam if not isinstance(i,AND)]
+			if len(yes)==0:
+				return OR(no)
+			else:
+				"konjunkcija vec disjunktov"
+				konj=[]
+				for i in yes[0].seznam:
+					temp=a+[i]+yes[1:]
+					konj.append(OR(temp.cno()))
+				return AND(konj).flatten()
         
         
 #razred za predstavitev NEG
@@ -184,11 +253,27 @@ class NOT():
             i = i.evaluate()
         return not i
     def simplify(self):
-    	# TEST: bo delovalo, ce je x negacij zaporedoma??
-##    	ne dela
-##       	if isinstance(self.seznam, NOT):
-##            return self.seznam.seznam
-    	pass
+    	if isinstance(self.vrednost, NOT):
+    		return self.vrednost.simplify()
+    	elif isinstance(self.vrednost, AND):
+    		nots=[NOT(a) for a in self.vrednost.seznam]
+    		return OR(nots).simplify()
+    	elif isinstance(self.vrednost, OR):
+    		nots=[NOT(a) for a in self.vrednost.seznam]
+    		return AND(nots).simplify()
+    	else:
+    		return self
+    def flatten(self):
+    	if isinstance(self.vrednost, NOT):
+    		return self.vrednost.flatten()
+    	elif isinstance(self.vrednost, AND):
+    		nots=[NOT(a) for a in self.vrednost.seznam]
+    		return OR(nots).flatten()
+    	elif isinstance(self.vrednost, OR):
+    		nots=[NOT(a) for a in self.vrednost.seznam]
+    		return AND(nots).flatten()
+    	else:
+    		return self
 
 #razred za predstavitev XOR
 class XOR:
@@ -293,3 +378,18 @@ class Var:
 ##print "poenostavitev f2:"
 ##print f2
 ##print f2.simplify()
+
+"""
+TESTING CNO
+"""
+q = Var("q")
+p = Var("p")
+r = Var("r")
+test_CNO_formula_1 = AND([OR([q,p, r]), OR([NOT(p), NOT(r)]), OR([NOT(q)])])
+test_CNO_formula_2 = AND([NOT(p), OR([p,NOT(q)]), OR([p,q,r])])
+test_CNO_formula_3 = AND([OR([p,q,r]), OR([p,NOT(q),r])])
+test_CNO_formula_4 = AND([p, OR([NOT(p), q]), OR([NOT(p), NOT(q), NOT(r)])])
+
+print test_CNO_formula_1.flatten()
+
+
