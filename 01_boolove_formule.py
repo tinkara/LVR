@@ -21,6 +21,8 @@ class Tru():
         pass
     def __str__(self):
         return "True"
+    def flatten(self):
+    	return "False"
 
 #razred za predstavitev konstante F
 class Fls():
@@ -28,90 +30,38 @@ class Fls():
         pass
     def __str__(self):
         return "False"
+    def flatten(self):
+    	return "False"
 
 #razred za predstavitev AND
 class AND:
-    def __init__(self, seznam):
-        self.seznam=seznam
-    def __repr__(self):
-        s=""
-        k=1
-        if len(self.seznam)==0:
-            s = str(Fls())
-            return s
-        else:
-            for i in self.seznam:
-                if k == len(self.seznam):
-                    s = s + str(i)
-                else:
-                    s = s + str(i) + ' A '
-                k += 1
-        return '(' + s + ')'
-    def evaluate(self):
-        k=1
-        for i in self.seznam:
-            if i is not False and i is not True:
-                i = i.evaluate()
-            if i is False:
-                return False
-            k+=1
-        return True
-    def simplify(self):
-        prvi = self.seznam[0]
-        drugi = self.seznam[1]
-        # p AND p = p
-        if prvi==drugi:
-            return prvi
-        # p AND T = p, T AND p = p
-        elif isinstance(prvi, Tru):
-            return drugi
-        elif isinstance(drugi, Tru):
-            return prvi
-        # p AND F = F
-        elif isinstance(prvi,Fls) or isinstance(drugi,Fls):
-            return Fls()
-        # p AND NOT p = F, NOT p AND p = F
-        neg_ime=""
-        temp=""
-        if isinstance(prvi, NOT):
-            neg_ime=prvi.vrednost
-            temp=drugi
-        if isinstance (drugi,NOT):
-            neg_ime=drugi.vrednost
-            temp=prvi
-        if neg_ime==temp:
-            return Fls()
-        # NOT p AND NOT q = NOT (p OR q)
-        if isinstance(prvi, NOT) and isinstance(drugi, NOT):
-        	return NOT(OR(prvi,drugi))
-        # p AND (p OR q) = p, (p OR q) AND p = p
-        if isinstance(drugi, OR) and (drugi.seznam[0]==prvi or drugi.seznam[1]==prvi):
-        	return prvi
-        elif isinstance(prvi, OR) and (prvi.seznam[0]==drugi or prvi.seznam[1]==drugi):
-            return drugi
-        # (p OR r) AND (q OR r) = (p AND q) OR r
-        if isinstance (prvi, OR) and isinstance(drugi, OR):
-        	if prvi.seznam[0]==drugi.seznam[0]:
-        		return OR(AND(prvi.seznam[1],drugi.seznam[1]),prvi.seznam[0])
-        	elif prvi.seznam[0]==drugi.seznam[1]:
-        		return OR(AND(prvi.seznam[1],drugi.seznam[0]),prvi.seznam[0])
-        	elif prvi.seznam[1]==drugi.seznam[0]:
-        		return OR(AND(prvi.seznam[0],drugi.seznam[1]),prvi.seznam[1])
-        	elif prvi.seznam[1]==drugi.seznam[1]:
-        		return OR(AND(prvi.seznam[0],drugi.seznam[0]),prvi.seznam[1])
-     
+	def __init__(self, seznam):
+		self.seznam=seznam
+	def __repr__(self):
+		s=""
+		k=1
+		if len(self.seznam)==0:
+			s = str(Fls())
+			return s
+		else:
+			for i in self.seznam:
+				if k == len(self.seznam):
+					s = s + str(i)
+				else:
+					s = s + str(i) + ' A '
+				k += 1
+		return '(' + s + ')'
 	def flatten(self):
 		if len(self.seznam)==1:
-			return self.seznam[0].flatten()
+			return self.seznam[0]
 		else:
 			sez=[]
-			for a in self.seznam:
-				b=a.flatten()
-				for c in b:
-					if isinstance(c,AND):
-						sez.append(c.seznam)
-					else:
-						sez.append([c])
+			b=[a.flatten() for a in self.seznam]
+			for c in b:
+				if isinstance(c,AND):
+					sez.append(c.seznam)
+				else:
+					sez.append([c])
 			for d in sez:
 				if isinstance(d,OR) and len(d.seznam)==0:
 					return Fls()
@@ -119,7 +69,60 @@ class AND:
 					return l[0]
 				else:
 					return AND(sez)
-	
+
+    
+	def evaluate(self):
+		k=1
+		for i in self.seznam:
+			if i is not False and i is not True:
+				i = i.evaluate()
+			if i is False:
+				return False
+			k+=1
+		return True
+	def simplify(self):
+		prvi = self.seznam[0]
+		drugi = self.seznam[1]
+		# p AND p = p
+		if prvi==drugi:
+			return prvi
+		# p AND T = p, T AND p = p
+		elif isinstance(prvi, Tru):
+			return drugi
+		elif isinstance(drugi, Tru):
+			return prvi
+		# p AND F = F
+		elif isinstance(prvi,Fls) or isinstance(drugi,Fls):
+			return Fls()
+		# p AND NOT p = F, NOT p AND p = F
+		neg_ime=""
+		temp=""
+		if isinstance(prvi, NOT):
+			neg_ime=prvi.vrednost
+			temp=drugi
+		if isinstance (drugi,NOT):
+			neg_ime=drugi.vrednost
+			temp=prvi
+		if neg_ime==temp:
+			return Fls()
+		# NOT p AND NOT q = NOT (p OR q)
+		if isinstance(prvi, NOT) and isinstance(drugi, NOT):
+			return NOT(OR(prvi,drugi))
+		# p AND (p OR q) = p, (p OR q) AND p = p
+		if isinstance(drugi, OR) and (drugi.seznam[0]==prvi or drugi.seznam[1]==prvi):
+			return prvi
+		elif isinstance(prvi, OR) and (prvi.seznam[0]==drugi or prvi.seznam[1]==drugi):
+			return drugi
+		# (p OR r) AND (q OR r) = (p AND q) OR r
+		if isinstance (prvi, OR) and isinstance(drugi, OR):
+			if prvi.seznam[0]==drugi.seznam[0]:
+				return OR(AND(prvi.seznam[1],drugi.seznam[1]),prvi.seznam[0])
+			elif prvi.seznam[0]==drugi.seznam[1]:
+				return OR(AND(prvi.seznam[1],drugi.seznam[0]),prvi.seznam[0])
+			elif prvi.seznam[1]==drugi.seznam[0]:
+				return OR(AND(prvi.seznam[0],drugi.seznam[1]),prvi.seznam[1])
+			elif prvi.seznam[1]==drugi.seznam[1]:
+				return OR(AND(prvi.seznam[0],drugi.seznam[0]),prvi.seznam[1])
 	def cno(self):
 		"prevedba na konjunktivno normalno obliko"
 		if len(self.seznam)==0:
@@ -137,108 +140,112 @@ class OR:
     def __init__(self, seznam):
         self.seznam=seznam
     def __repr__(self):
-        s=""
-        k=1
-        if len(self.seznam)==0:
-            s = str(Fls())
-            return s
-        else:
-            for i in self.seznam:
-                if k == len(self.seznam):
-                    s = s + str(i)
-                else:
-                    s = s + str(i) + ' V '
-                k += 1
-        return '(' + s + ')'
-    def evaluate(self):
-        for i in self.seznam:
-            if i is not False and i is not True:
-                i = i.evaluate()
-            if i is True:
-                return True
-        return False
-    def simplify(self):
-        prvi = self.seznam[0]
-        drugi = self.seznam[1]
-        # p OR p = p
-        if prvi==drugi:
-            return prvi
-        # p OR T = T, T OR p = T
-        elif isinstance(prvi, Tru) or isinstance(drugi, Tru):
-            return Tru()
-        # p OR F = p
-        elif isinstance(prvi,Fls):
-        	return prvi
-        elif isinstance(drugi,Fls):
-            return drugi
-        # p OR NOT p = T, NOT p OR p = T
-        neg_ime=""
-        temp=""
-        if isinstance(prvi, NOT):
-            neg_ime=prvi.vrednost
-            temp=drugi
-        if isinstance (drugi,NOT):
-            neg_ime=drugi.vrednost
-            temp=prvi
-        if neg_ime==temp:
-            return Tru()
-        # NOT p OR NOT q = NOT (p AND q)
-        if isinstance(prvi, NOT) and isinstance(drugi, NOT):
-        	return NOT(AND(prvi,drugi))
-        # p OR (p AND q) = p, (p AND q) OR p = p
-        if isinstance(drugi, AND) and (drugi.seznam[0]==prvi or drugi.seznam[1]==prvi):
-        	return prvi
-        elif isinstance(prvi, AND) and (prvi.seznam[0]==drugi or prvi.seznam[1]==drugi):
-            return drugi
-        # (p AND r) OR (q AND r) = (p OR q) AND r
-        if isinstance (prvi, OR) and isinstance(drugi, OR):
-        	if prvi.seznam[0]==drugi.seznam[0]:
-        		return AND(OR(prvi.seznam[1],drugi.seznam[1]),prvi.seznam[0])
-        	elif prvi.seznam[0]==drugi.seznam[1]:
-        		return AND(OR(prvi.seznam[1],drugi.seznam[0]),prvi.seznam[0])
-        	elif prvi.seznam[1]==drugi.seznam[0]:
-        		return AND(OR(prvi.seznam[0],drugi.seznam[1]),prvi.seznam[1])
-        	elif prvi.seznam[1]==drugi.seznam[1]:
-        		return AND(OR(prvi.seznam[0],drugi.seznam[0]),prvi.seznam[1])
-	def flatten(self):
-		if len(self.seznam)==1:
-			return self.seznam[0].flatten()
-		else:
-			sez=[]
-			for a in self.seznam:
-				b=a.flatten()
-				for c in b:
-					if isinstance(c,OR):
-						sez.append(c.seznam)
-					else:
-						sez.append([c])
-			for d in sez:
-				if isinstance(d,AND) and len(d.seznam)==0:
-					return Tru()
-				elif len(sez)==1:
-					return l[0]
-				else:
-					return OR(sez)
-									
-	def cno(self):
-		"konjunktivna normalna oblika"
-		if len(self.seznam)==0:
-			return self
-		elif len(self.seznam)==0:
-			return self.seznam[0].cno()
-		else:
-			flat=[i.cno() for i in self.flatten().seznam]
-			yes=[i for i in self.seznam if isinstance(i,AND)]
-			no=[i for i in self.seznam if not isinstance(i,AND)]
-			if len(yes)==0:
-				return OR(no)
-			else:
-				"konjunkcija vec disjunktov"
-				konj=[]
-				for i in yes[0].seznam:
-					temp=a+[i]+yes[1:]
-					konj.append(OR(temp.cno()))
-				return AND(konj).flatten()
+    	s=""
+    	k=1
+    	if len(self.seznam)==0:
+    		s = str(Fls())
+    		return s
+    	else:
+    		for i in self.seznam:
+    			if k == len(self.seznam):
+    				s = s + str(i)
+    			else:
+    				s = s + str(i) + ' V '
+    			k += 1
+    	return '(' + s + ')'
+    def flatten(self):
+    	if len(self.seznam)==1:
+    		return self.seznam[0].flatten()
+    	else:
+    		sez=[]
+    		b=[a.flatten() for a in self.seznam]
+    		for c in b:
+    			if isinstance(c,OR):
+    				sez.append(c.seznam)
+    			else:
+    				sez.append([c])
+    		for d in sez:
+    			if isinstance(d,AND) and len(d.seznam)==0:
+    				return Tru()
+    			elif len(sez)==1:
+    				return l[0]
+    			else:
+    				return OR(sez)
+    def cno(self):
+    	"konjunktivna normalna oblika"
+    	if len(self.seznam)==0:
+    		return self
+    	elif len(self.seznam)==0:
+    		return self.seznam[0].cno()
+    	else:
+    		flat=[i.cno() for i in self.seznam]
+    		yes=[i for i in self.seznam if isinstance(i,AND)]
+    		no=[i for i in self.seznam if not isinstance(i,AND)]
+    		if len(yes)==0:
+    			return OR(no)
+    		else:
+    			"konjunkcija vec disjunktov"
+    			konj=[]
+    			for i in yes[0].seznam:
+    				temp=a+[i]+yes[1:]
+    				konj.append(OR(temp.cno()))
+    			return AND(konj).flatten()
+
+
+
+
+	def krneki():
+		pass
+	def simplify(self):
+		prvi = self.seznam[0]
+		drugi = self.seznam[1]
+		# p OR p = p
+		if prvi==drugi:
+			return prvi
+		# p OR T = T, T OR p = T
+		elif isinstance(prvi, Tru) or isinstance(drugi, Tru):
+			return Tru()
+		# p OR F = p
+		elif isinstance(prvi,Fls):
+			return prvi
+		elif isinstance(drugi,Fls):
+			return drugi
+		# p OR NOT p = T, NOT p OR p = T
+		neg_ime=""
+		temp=""
+		if isinstance(prvi, NOT):
+			neg_ime=prvi.vrednost
+			temp=drugi
+		if isinstance (drugi,NOT):
+			neg_ime=drugi.vrednost
+			temp=prvi
+		if neg_ime==temp:
+			return Tru()
+		# NOT p OR NOT q = NOT (p AND q)
+		if isinstance(prvi, NOT) and isinstance(drugi, NOT):
+			return NOT(AND(prvi,drugi))
+		# p OR (p AND q) = p, (p AND q) OR p = p
+		if isinstance(drugi, AND) and (drugi.seznam[0]==prvi or drugi.seznam[1]==prvi):
+			return prvi
+		elif isinstance(prvi, AND) and (prvi.seznam[0]==drugi or prvi.seznam[1]==drugi):
+			return drugi
+		# (p AND r) OR (q AND r) = (p OR q) AND r
+		if isinstance (prvi, OR) and isinstance(drugi, OR):
+			if prvi.seznam[0]==drugi.seznam[0]:
+				return AND(OR(prvi.seznam[1],drugi.seznam[1]),prvi.seznam[0])
+			elif prvi.seznam[0]==drugi.seznam[1]:
+				return AND(OR(prvi.seznam[1],drugi.seznam[0]),prvi.seznam[0])
+			elif prvi.seznam[1]==drugi.seznam[0]:
+				return AND(OR(prvi.seznam[0],drugi.seznam[1]),prvi.seznam[1])
+			elif prvi.seznam[1]==drugi.seznam[1]:
+				return AND(OR(prvi.seznam[0],drugi.seznam[0]),prvi.seznam[1])
+	def evaluate(self):
+		for i in self.seznam:
+			if i is not False and i is not True:
+				i = i.evaluate()
+			if i is True:
+				return True
+		return False
         
         
 #razred za predstavitev NEG
@@ -274,6 +281,18 @@ class NOT():
     		return AND(nots).flatten()
     	else:
     		return self
+    def cno(self):
+    	if isinstance(self.vrednost, NOT):
+    		return self.vrednost.flatten()
+    	elif isinstance(self.vrednost, AND):
+    		nots=[NOT(a) for a in self.vrednost.seznam]
+    		return OR(nots).flatten()
+    	elif isinstance(self.vrednost, OR):
+    		nots=[NOT(a) for a in self.vrednost.seznam]
+    		return AND(nots).flatten()
+    	else:
+    		return self
+    	
 
 #razred za predstavitev XOR
 class XOR:
@@ -308,6 +327,10 @@ class Var:
         return False
     def __hash__(self):
         return id(self)
+    def flatten(self):
+    	return self.ime
+    def cno(self):
+    	return self.ime
 
 #test izpisov
 ##print "OSNOVNI IZPISI: true false var not and or"
@@ -390,6 +413,6 @@ test_CNO_formula_2 = AND([NOT(p), OR([p,NOT(q)]), OR([p,q,r])])
 test_CNO_formula_3 = AND([OR([p,q,r]), OR([p,NOT(q),r])])
 test_CNO_formula_4 = AND([p, OR([NOT(p), q]), OR([NOT(p), NOT(q), NOT(r)])])
 
-print test_CNO_formula_1.flatten()
+print test_CNO_formula_1.cno()
 
 
