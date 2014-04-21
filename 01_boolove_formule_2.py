@@ -22,10 +22,10 @@ class Tru():
         pass
     def __str__(self):
         return "True"
-	def flatten(self):
-		return "True"
-	def cno(self):
-		return "True"
+    def flatten(self):
+            return "True"
+    def cno(self):
+            return "True"
 
 #razred za predstavitev konstante F
 class Fls():
@@ -33,10 +33,10 @@ class Fls():
         pass
     def __str__(self):
         return "False"
-   	def flatten(self):
-   		return "False"
-   	def cno(self):
-   		return "False"
+    def flatten(self):
+            return "False"
+    def cno(self):
+            return "False"
 
 #razred za predstavitev AND
 class AND:

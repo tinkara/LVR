@@ -70,16 +70,15 @@ class AND:
 				else:
 					return AND(sez)
 
-    
 	def evaluate(self):
-		k=1
-		for i in self.seznam:
-			if i is not False and i is not True:
-				i = i.evaluate()
-			if i is False:
-				return False
-			k+=1
-		return True
+            k=1
+            for i in self.seznam:
+                if i is not False and i is not True:
+                    i = i.evaluate()
+                if i is False:
+                    return False
+		k+=1
+	    return True
 	def simplify(self):
 		prvi = self.seznam[0]
 		drugi = self.seznam[1]
@@ -191,61 +190,59 @@ class OR:
     				konj.append(OR(temp.cno()))
     			return AND(konj).flatten()
 
+    def krneki():
+    	pass
+    def simplify(self):
+    	prvi = self.seznam[0]
+    	drugi = self.seznam[1]
+    	# p OR p = p
+    	if prvi==drugi:
+    		return prvi
+    	# p OR T = T, T OR p = T
+    	elif isinstance(prvi, Tru) or isinstance(drugi, Tru):
+    		return Tru()
+    	# p OR F = p
+    	elif isinstance(prvi,Fls):
+    		return prvi
+    	elif isinstance(drugi,Fls):
+    		return drugi
+    	# p OR NOT p = T, NOT p OR p = T
+    	neg_ime=""
+    	temp=""
+    	if isinstance(prvi, NOT):
+            neg_ime=prvi.vrednost
+            temp=drugi
+    	if isinstance (drugi,NOT):
+	    neg_ime=drugi.vrednost
+            temp=prvi
+        if neg_ime==temp:
+            return Tru()
+	# NOT p OR NOT q = NOT (p AND q)
+	if isinstance(prvi, NOT) and isinstance(drugi, NOT):
+            return NOT(AND(prvi,drugi))
+	# p OR (p AND q) = p, (p AND q) OR p = p
+	if isinstance(drugi, AND) and (drugi.seznam[0]==prvi or drugi.seznam[1]==prvi):
+	    return prvi
+	elif isinstance(prvi, AND) and (prvi.seznam[0]==drugi or prvi.seznam[1]==drugi):
+	    return drugi
+	# (p AND r) OR (q AND r) = (p OR q) AND r
+	if isinstance (prvi, OR) and isinstance(drugi, OR):
+	    if prvi.seznam[0]==drugi.seznam[0]:
+	    	    return AND(OR(prvi.seznam[1],drugi.seznam[1]),prvi.seznam[0])
+	    elif prvi.seznam[0]==drugi.seznam[1]:
+	    	    return AND(OR(prvi.seznam[1],drugi.seznam[0]),prvi.seznam[0])
+	    elif prvi.seznam[1]==drugi.seznam[0]:
+	    	    return AND(OR(prvi.seznam[0],drugi.seznam[1]),prvi.seznam[1])
+	    elif prvi.seznam[1]==drugi.seznam[1]:
+	    	    return AND(OR(prvi.seznam[0],drugi.seznam[0]),prvi.seznam[1])
 
-
-
-	def krneki():
-		pass
-	def simplify(self):
-		prvi = self.seznam[0]
-		drugi = self.seznam[1]
-		# p OR p = p
-		if prvi==drugi:
-			return prvi
-		# p OR T = T, T OR p = T
-		elif isinstance(prvi, Tru) or isinstance(drugi, Tru):
-			return Tru()
-		# p OR F = p
-		elif isinstance(prvi,Fls):
-			return prvi
-		elif isinstance(drugi,Fls):
-			return drugi
-		# p OR NOT p = T, NOT p OR p = T
-		neg_ime=""
-		temp=""
-		if isinstance(prvi, NOT):
-			neg_ime=prvi.vrednost
-			temp=drugi
-		if isinstance (drugi,NOT):
-			neg_ime=drugi.vrednost
-			temp=prvi
-		if neg_ime==temp:
-			return Tru()
-		# NOT p OR NOT q = NOT (p AND q)
-		if isinstance(prvi, NOT) and isinstance(drugi, NOT):
-			return NOT(AND(prvi,drugi))
-		# p OR (p AND q) = p, (p AND q) OR p = p
-		if isinstance(drugi, AND) and (drugi.seznam[0]==prvi or drugi.seznam[1]==prvi):
-			return prvi
-		elif isinstance(prvi, AND) and (prvi.seznam[0]==drugi or prvi.seznam[1]==drugi):
-			return drugi
-		# (p AND r) OR (q AND r) = (p OR q) AND r
-		if isinstance (prvi, OR) and isinstance(drugi, OR):
-			if prvi.seznam[0]==drugi.seznam[0]:
-				return AND(OR(prvi.seznam[1],drugi.seznam[1]),prvi.seznam[0])
-			elif prvi.seznam[0]==drugi.seznam[1]:
-				return AND(OR(prvi.seznam[1],drugi.seznam[0]),prvi.seznam[0])
-			elif prvi.seznam[1]==drugi.seznam[0]:
-				return AND(OR(prvi.seznam[0],drugi.seznam[1]),prvi.seznam[1])
-			elif prvi.seznam[1]==drugi.seznam[1]:
-				return AND(OR(prvi.seznam[0],drugi.seznam[0]),prvi.seznam[1])
-	def evaluate(self):
-		for i in self.seznam:
-			if i is not False and i is not True:
-				i = i.evaluate()
-			if i is True:
-				return True
-		return False
+    def evaluate(self):
+        for i in self.seznam:
+            if i is not False and i is not True:
+                i = i.evaluate()
+            if i is True:
+                return True
+	return False
         
         
 #razred za predstavitev NEG
