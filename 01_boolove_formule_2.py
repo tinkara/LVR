@@ -22,6 +22,10 @@ class Tru():
         pass
     def __str__(self):
         return "True"
+	def flatten(self):
+		return "True"
+	def cno(self):
+		return "True"
 
 #razred za predstavitev konstante F
 class Fls():
@@ -29,6 +33,10 @@ class Fls():
         pass
     def __str__(self):
         return "False"
+   	def flatten(self):
+   		return "False"
+   	def cno(self):
+   		return "False"
 
 #razred za predstavitev AND
 class AND:
@@ -106,13 +114,12 @@ class AND:
     		return self.seznam[0].flatten()
     	else:
     		sez=[]
-    		for a in self.seznam:
-    			b=[a.flatten() for a in self.seznam]
-    			for c in b:
-    				if isinstance(c,AND):
-    					sez.append(c.seznam)
-    				else:
-    					sez.append([c])
+    		b=[a.flatten() for a in self.seznam]
+    		for c in b:
+    			if isinstance(c,AND):
+    				sez.append(c.seznam)
+    			else:
+    				sez.append([c])
     		for d in sez:
     			if isinstance(d,OR) and len(d.seznam)==0:
     				return Fls()
@@ -207,13 +214,12 @@ class OR:
     		return self.seznam[0].flatten()
     	else:
     		sez=[]
-    		for a in self.seznam:
-    			b=a.flatten()
-    			for c in b:
-    				if isinstance(c,OR):
-    					sez.append(c.seznam)
-    				else:
-    					sez.append([c])
+    		b=[a.flatten() for a in self.seznam]
+    		for c in b:
+    			if isinstance(c,OR):
+    				sez.append(c.seznam)
+    			else:
+    				sez.append([c])
     		for d in sez:
     			if isinstance(d,AND) and len(d.seznam)==0:
     				return Tru()
@@ -229,7 +235,7 @@ class OR:
     	elif len(self.seznam)==0:
     		return self.seznam[0].cno()
     	else:
-    		flat=[i.cno() for i in self.flatten().seznam]
+    		flat=[i.cno() for i in self.seznam]
     		yes=[i for i in self.seznam if isinstance(i,AND)]
     		no=[i for i in self.seznam if not isinstance(i,AND)]
     		if len(yes)==0:
@@ -275,18 +281,18 @@ class NOT():
     		return AND(nots).flatten()
     	else:
     		return self
-    	    
-##    def cno(self):
-##        if isinstance(self.vrednost, NOT):
-##            return self.vrednost.flatten()
-##    	elif isinstance(self.vrednost, AND):
-##            nots=[NOT(a) for a in self.vrednost.seznam]
-##            return OR(nots).flatten()
-##    	elif isinstance(self.vrednost, OR):
-##    	    nots=[NOT(a) for a in self.vrednost.seznam]
-##    	    return AND(nots).flatten()
-##    	else:
-##    	    return self
+    def cno(self):
+    	if isinstance(self.vrednost, NOT):
+    		return self.vrednost.cno()
+    	elif isinstance(self.vrednost, AND):
+    		nots=[NOT(a) for a in self.vrednost.seznam]
+    		return OR(nots).cno()
+    	elif isinstance(self.vrednost, OR):
+    		nots=[NOT(a) for a in self.vrednost.seznam]
+    		return AND(nots).cno()
+    	else:
+    		return self
+
 
 #razred za predstavitev XOR
 class XOR:
@@ -299,14 +305,14 @@ class XOR:
         return AND([OR([self.p,self.q]),NOT(AND([self.p,self.q]))]).evaluate()
 
 #razred za predstavitev EKVIVALENCE
-    class EQ:
-        def __init(self,p,q):
-            self.p=p
-            self.q=q
-        def __repr__(self):
-            return AND([OR([NOT(self.p),self.q]),OR(NOT(self.q),self.p)]).__repr__()
-        def evaluate(self):
-            return AND([OR([NOT(self.p),self.q]),OR(NOT(self.q),self.p)]).evaluate()
+class EQ:
+	def __init(self,p,q):
+		self.p=p
+		self.q=q
+	def __repr__(self):
+		return AND([OR([NOT(self.p),self.q]),OR(NOT(self.q),self.p)]).__repr__()
+	def evaluate(self):
+		return AND([OR([NOT(self.p),self.q]),OR(NOT(self.q),self.p)]).evaluate()
             
 
 #razred za predstavitev spremenljivke
@@ -407,4 +413,4 @@ test_CNO_formula_2 = AND([NOT(p), OR([p,NOT(q)]), OR([p,q,r])])
 test_CNO_formula_3 = AND([OR([p,q,r]), OR([p,NOT(q),r])])
 test_CNO_formula_4 = AND([p, OR([NOT(p), q]), OR([NOT(p), NOT(q), NOT(r)])])
 
-print test_CNO_formula_1.flatten()
+print test_CNO_formula_1.cno()
