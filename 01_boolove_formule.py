@@ -59,9 +59,9 @@ class AND:
 			b=[a.flatten() for a in self.seznam]
 			for c in b:
 				if isinstance(c,AND):
-					sez.append(c.seznam)
+					sez=sez+c.seznam
 				else:
-					sez.append([c])
+					sez.append(c)
 			for d in sez:
 				if isinstance(d,OR) and len(d.seznam)==0:
 					return Fls()
@@ -126,8 +126,6 @@ class AND:
 	def cno(self):
 		"prevedba na konjunktivno normalno obliko"
 		if len(self.seznam)==0:
-			return self
-		elif len(self.seznam)==0:
 			return self.seznam[0].cno()
 		else:
 			func=[]
@@ -163,7 +161,7 @@ class OR:
     			if isinstance(c,OR):
     				sez.append(c.seznam)
     			else:
-    				sez.append([c])
+    				sez.append(c)
     		for d in sez:
     			if isinstance(d,AND) and len(d.seznam)==0:
     				return Tru()
@@ -187,8 +185,8 @@ class OR:
     			"konjunkcija vec disjunktov"
     			konj=[]
     			for i in yes[0].seznam:
-    				temp=a+[i]+yes[1:]
-    				konj.append(OR(temp.cno()))
+    				temp=no+[i]+yes[1:]
+    				konj.append(OR(temp).cno())
     			return AND(konj).flatten()
 
 
@@ -261,7 +259,7 @@ class NOT():
         return not i
     def simplify(self):
     	if isinstance(self.vrednost, NOT):
-    		return self.vrednost.simplify()
+    		return self.vrednost.vrednost.simplify()
     	elif isinstance(self.vrednost, AND):
     		nots=[NOT(a) for a in self.vrednost.seznam]
     		return OR(nots).simplify()
@@ -272,7 +270,7 @@ class NOT():
     		return self
     def flatten(self):
     	if isinstance(self.vrednost, NOT):
-    		return self.vrednost.flatten()
+    		return self.vrednost.vrednost.flatten()
     	elif isinstance(self.vrednost, AND):
     		nots=[NOT(a) for a in self.vrednost.seznam]
     		return OR(nots).flatten()
@@ -283,7 +281,7 @@ class NOT():
     		return self
     def cno(self):
     	if isinstance(self.vrednost, NOT):
-    		return self.vrednost.flatten()
+    		return self.vrednost.vrednost.flatten()
     	elif isinstance(self.vrednost, AND):
     		nots=[NOT(a) for a in self.vrednost.seznam]
     		return OR(nots).flatten()
@@ -328,9 +326,9 @@ class Var:
     def __hash__(self):
         return id(self)
     def flatten(self):
-    	return self.ime
+    	return self
     def cno(self):
-    	return self.ime
+    	return self
 
 #test izpisov
 ##print "OSNOVNI IZPISI: true false var not and or"
@@ -408,11 +406,18 @@ TESTING CNO
 q = Var("q")
 p = Var("p")
 r = Var("r")
+s = Var("s")
 test_CNO_formula_1 = AND([OR([q,p, r]), OR([NOT(p), NOT(r)]), OR([NOT(q)])])
 test_CNO_formula_2 = AND([NOT(p), OR([p,NOT(q)]), OR([p,q,r])])
 test_CNO_formula_3 = AND([OR([p,q,r]), OR([p,NOT(q),r])])
 test_CNO_formula_4 = AND([p, OR([NOT(p), q]), OR([NOT(p), NOT(q), NOT(r)])])
 
-print test_CNO_formula_1.cno()
+test_CNO_formula_5=NOT(OR([p,q]))
+test_CNO_formula_6=OR([AND([p,r]),q])
+test_CNO_formula_7=NOT(NOT(p))
+"ali je treba se znebiti tudi oklepajev?"
+test_CNO_formula_8=AND([p,OR([q,AND([r,s])])])
+
+print test_CNO_formula_8.cno()
 
 
