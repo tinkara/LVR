@@ -20,7 +20,7 @@ except NameError:
 class Tru():
     def __init__(self):
         pass
-    def __str__(self):
+    def __repr__(self):
         return "True"
 	def flatten(self):
 		return "True"
@@ -31,7 +31,7 @@ class Tru():
 class Fls():
     def __init__(self):
         pass
-    def __str__(self):
+    def __repr__(self):
         return "False"
    	def flatten(self):
    		return "False"
@@ -114,7 +114,9 @@ class AND:
     		return self.seznam[0].flatten()
     	else:
     		sez=[]
+    		print self.seznam
     		b=[a.flatten() for a in self.seznam]
+    		#print b
     		for c in b:
     			if isinstance(c,AND):
     				sez.append(c.seznam)
@@ -408,7 +410,7 @@ TESTING CNO
 q = Var("q")
 p = Var("p")
 r = Var("r")
-test_CNO_formula_1 = AND([OR([q,p, r]), OR([NOT(p), NOT(r)]), OR([NOT(q)])])
+test_CNO_formula_1 = OR([AND([p, q]),r])
 test_CNO_formula_2 = AND([NOT(p), OR([p,NOT(q)]), OR([p,q,r])])
 test_CNO_formula_3 = AND([OR([p,q,r]), OR([p,NOT(q),r])])
 test_CNO_formula_4 = AND([p, OR([NOT(p), q]), OR([NOT(p), NOT(q), NOT(r)])])
