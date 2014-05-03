@@ -1,8 +1,8 @@
-					 LOGIKA V RAČUNALNIŠTVU 
-					 Tinkara Toš (vpisna št)
-					 Tanja Malić (27122019)
-					    	Junij 2014
-==============================================================
+						 LOGIKA V RAČUNALNIŠTVU 
+						 Tinkara Toš (vpisna št)
+						 Tanja Malić (27122019)
+					    		Junij 2014
+===================================================================================================================
 
 Projekt vsebuje implementacijo podatkovnih struktur za predstavitev Boolovih formul, metode za prevedbo 
 problemov na SAT obliko in algoritem za reševanje teh problemov. Uporabili smo DPLL algoritem 
