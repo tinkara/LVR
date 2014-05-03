@@ -22,7 +22,7 @@ V repozitoriju se nahajajo naslednje datoteke:
 
 NAVODILA ZA UPORABO:
 
-Sprehod skozi datoteko s primeri da vedeti kako se lahko implementirano uporablja.
+Sprehod skozi datoteko s primeri.
 
 UNITTEST:
 
