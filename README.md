@@ -4,6 +4,8 @@
 					    		Junij 2014
 ===================================================================================================================
 
+OPIS:
+
 Projekt vsebuje implementacijo podatkovnih struktur za predstavitev Boolovih formul, metode za prevedbo 
 problemov na SAT obliko in algoritem za reševanje teh problemov. Uporabili smo DPLL algoritem 
 (http://en.wikipedia.org/wiki/DPLL_algorithm), ki smo ga nadgradili s predhodnim sortiranjem.
