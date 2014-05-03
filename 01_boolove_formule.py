@@ -23,9 +23,11 @@ class Tru():
     def __repr__(self):
         return "True"
     def flatten(self):
-    	return "True"
+        return "True"
     def cno(self):
-    	return "True"
+        return "True"
+    def simplify(self):
+    	return self
 
 #razred za predstavitev konstante F
 class Fls():
@@ -34,9 +36,9 @@ class Fls():
     def __repr__(self):
         return "False"
     def flatten(self):
-    	return "False"
+        return "False"
     def cno(self):
-    	return "False"
+        return "False"
     def simplify(self):
     	return self
 
@@ -318,7 +320,7 @@ class Var:
     def __init__(self, ime):
         self.ime=ime
     def __repr__(self):
-        return self.ime
+        return str(self.ime)
     def __eq__(self, ime2):
         if self.ime==ime2:
             return True
@@ -402,7 +404,7 @@ class Var:
 
 """
 TESTING CNO
-
+"""
 q = Var("q")
 p = Var("p")
 r = Var("r")
@@ -419,4 +421,3 @@ test_CNO_formula_7=NOT(NOT(p))
 test_CNO_formula_8=AND([p,OR([q,AND([r,s])])])
 
 print test_CNO_formula_5.cno()
-"""
