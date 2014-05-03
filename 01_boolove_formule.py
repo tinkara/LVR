@@ -333,6 +333,8 @@ class Var:
     	return self
     def cno(self):
     	return self
+    def simplify(self):
+    	return self
 
 #test izpisov
 ##print "OSNOVNI IZPISI: true false var not and or"
@@ -423,6 +425,10 @@ test_CNO_formula_7=NOT(NOT(p))
 test_CNO_formula_8=AND([p,OR([q,AND([r,s])])])
 
 print test_CNO_formula_5.cno()
-"""
+
 p=AND([Var("a"), Var("b")])
 print p.simplify()
+
+p=NOT(NOT(NOT(Var("a"))))
+print p.simplify()
+"""
