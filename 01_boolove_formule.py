@@ -416,4 +416,4 @@ test_CNO_formula_7=NOT(NOT(p))
 "ali je treba se znebiti tudi oklepajev?"
 test_CNO_formula_8=AND([p,OR([q,AND([r,s])])])
 
-print test_CNO_formula_8.cno()
+print test_CNO_formula_5.cno()
