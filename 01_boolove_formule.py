@@ -316,7 +316,7 @@ class Var:
     def __init__(self, ime):
         self.ime=ime
     def __repr__(self):
-        return self.ime
+        return str(self.ime)
     def __eq__(self, ime2):
         if self.ime==ime2:
             return True
