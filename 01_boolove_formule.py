@@ -23,9 +23,11 @@ class Tru():
     def __repr__(self):
         return "True"
     def flatten(self):
-            return "True"
+        return "True"
     def cno(self):
-            return "True"
+        return "True"
+    def simplify(self):
+    	return self
 
 #razred za predstavitev konstante F
 class Fls():
@@ -34,9 +36,11 @@ class Fls():
     def __repr__(self):
         return "False"
     def flatten(self):
-            return "False"
+        return "False"
     def cno(self):
-            return "False"
+        return "False"
+    def simplify(self):
+    	return self
 
 #razred za predstavitev AND
 class AND:
@@ -81,7 +85,7 @@ class AND:
             return Fls()
         # p AND NOT p = F, NOT p AND p = F
         neg_ime=""
-        temp=""
+        temp="1"
         if isinstance(prvi, NOT):
             neg_ime=prvi.vrednost
             temp=drugi
@@ -108,6 +112,7 @@ class AND:
         		return OR(AND(prvi.seznam[0],drugi.seznam[1]),prvi.seznam[1])
         	elif prvi.seznam[1]==drugi.seznam[1]:
         		return OR(AND(prvi.seznam[0],drugi.seznam[0]),prvi.seznam[1])
+        return self
      
     def flatten(self):
     	if len(self.seznam)==1:
@@ -179,7 +184,7 @@ class OR:
             return drugi
         # p OR NOT p = T, NOT p OR p = T
         neg_ime=""
-        temp=""
+        temp="1"
         if isinstance(prvi, NOT):
             neg_ime=prvi.vrednost
             temp=drugi
@@ -206,6 +211,7 @@ class OR:
         		return AND(OR(prvi.seznam[0],drugi.seznam[1]),prvi.seznam[1])
         	elif prvi.seznam[1]==drugi.seznam[1]:
         		return AND(OR(prvi.seznam[0],drugi.seznam[0]),prvi.seznam[1])
+        return self
 
     def flatten(self):
     	if len(self.seznam)==1:
@@ -327,6 +333,8 @@ class Var:
     	return self
     def cno(self):
     	return self
+    def simplify(self):
+    	return self
 
 #test izpisov
 ##print "OSNOVNI IZPISI: true false var not and or"
@@ -400,7 +408,7 @@ class Var:
 
 """
 TESTING CNO
-"""
+
 q = Var("q")
 p = Var("p")
 r = Var("r")
@@ -417,3 +425,10 @@ test_CNO_formula_7=NOT(NOT(p))
 test_CNO_formula_8=AND([p,OR([q,AND([r,s])])])
 
 print test_CNO_formula_5.cno()
+
+p=AND([Var("a"), Var("b")])
+print p.simplify()
+
+p=NOT(NOT(NOT(Var("a"))))
+print p.simplify()
+"""
