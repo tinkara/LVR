@@ -162,6 +162,7 @@ def Hadamardova_matrika(H):
     formula = []
     #vrstica i
     for i in range(n-1):
+        
         #vrstica j
         for j in range(i+1, n):
             xor=[]
@@ -169,6 +170,7 @@ def Hadamardova_matrika(H):
             for k in range(n):
                 prva  = "vr" +str(i)+ "_st"+str(k)
                 druga = "vr" +str(j)+ "_st"+str(k)
+                print bool.XOR(prva, druga)
                 xor.append(bool.XOR(prva, druga))
             print xor
             print
