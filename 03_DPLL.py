@@ -11,15 +11,17 @@
 
 bool = __import__ ('01_boolove_formule')
 
-# Zdruzljivost za Python 2 in Python 3 la
+# Zdruzljivost za Python 2 in Python 3
 try:
     basestring
 except NameError:
     basestring = str
 
-#f je logicni izraz v KNO obliki
-#literali so seznam literalov, za katere vemo vrednosti
-def DPLL(f, literali, lahkoDodajamVLiterale):
+#Meoda, ki je implementacija DPLL algoritma.
+#f je logicni izraz v CNO
+#literali so seznam literalov, za katere vemo vrednosti (in se ne smejo spreminjati)
+#lahkoDodajamoVLiterale je True/False vrednost, ki pove ali smem spr spreminjati (ce da, je ne smem dati v literale)
+def DPLL_alg(f, literali, lahkoDodajamVLiterale):
     ostalo = [] #seznam ORov, kjer ne vemo vrednosti niti enega literala notri
     for i in f.seznam:
       
@@ -77,12 +79,12 @@ def DPLL(f, literali, lahkoDodajamVLiterale):
                     elif str(j.vrednost) not in seLahkoSpremeni:
                         seLahkoSpremeni.append(str(j.vrednost))
                         or_seznam.append(j)
-                if vSeznamuLiteralov and not DPLL(bool.OR([j]),literali,False):
+                if vSeznamuLiteralov and not DPLL_alg(bool.OR([j]),literali,False):
                     niResitve = True
                 elif vSeznamuLiteralov:
                     or_seznam = []
             
-            if count==len(k.seznam):    #sami NOT, ki imajo znane literale, sledi
+            if count==len(k.seznam):    #sami NOT, ki imajo znane literale, sledi ni resitve
                 niResitve = True
            
             else:
@@ -95,23 +97,26 @@ def DPLL(f, literali, lahkoDodajamVLiterale):
                     true = ""
                     if isinstance(key, bool.NOT) and str(keyNOT) in seLahkoSpremeni:
                         literali[keyNOT] = True
-                        true = DPLL(k, literali, False)
+                        true = DPLL_alg(k, literali, False)
                     elif str(key) in seLahkoSpremeni:
                         literali[str(key)] = True
-                        true = DPLL(k, literali, False)
+                        true = DPLL_alg(k, literali, False)
                     if not true:
                         if isinstance(key, bool.NOT) and str(keyNOT) in seLahkoSpremeni:
                             literali[keyNOT] = False
-                            true = DPLL(k, literali, False)
+                            true = DPLL_alg(k, literali, False)
                         elif str(key) in seLahkoSpremeni:
                             literali[str(key)] = False
-                            true = DPLL(k, literali, False)
+                            true = DPLL_alg(k, literali, False)
                 del ostalo[0]
         if niResitve:
             return False
         else:
             return literali
 
+
+#Metoda, ki sortira formulo ter nato klice dpll algoritem, kjer dobimo resitev.
+#Argument je formula f v CNO.
 def DPLL_sort(f):
     f_sorted = []
     count = 0
@@ -129,34 +134,18 @@ def DPLL_sort(f):
             else:
                 f_sorted.insert(pos,i)
     f_cno_sorted = bool.AND(f_sorted)
-    print "formula sorted: ", f_cno_sorted
-    return DPLL(f_cno_sorted,{}, True)
+    #print "formula sorted: ", f_cno_sorted
+    return DPLL_alg(f_cno_sorted,{}, True)
 
 
-#testni primer
-p = bool.Var('p')
-q = bool.Var('q')
-r = bool.Var('r')
-s = bool.Var('s')
-t = bool.Var('t')
-u = bool.Var('u')
-
-##f_cno = bool.AND([p,q,bool.OR([p,r]),bool.OR([u,s,p]), bool.OR([q,r]), bool.OR([p,q,r,s,t]),bool.OR([bool.NOT(r),t]), bool.OR([bool.NOT(u), p])])
-
-
-f_cno = bool.AND([bool.OR([q,r]), bool.OR([r,bool.NOT(p)]),p])
-##f_cno = bool.AND([p,q,r, bool.NOT(r)])
-##f_cno = bool.AND([bool.OR([p,bool.NOT(q)]),bool.OR([bool.NOT(p),q])])
-
-
-f_cno=bool.AND([p,q, bool.OR([bool.NOT(p),bool.NOT(q)])])
-
-
-print "formula: ", f_cno
-##print"==============================="
-res = DPLL_sort(f_cno)
-##print"==============================="
-print "rezultat: ", res
+#Metoda, ki pozene klic sortiranja (tam pa se pozene algoritem).
+#Argument je formula f v CNO.
+def DPLL(f):
+    res = DPLL_sort(f)
+    if not res:
+        return "Ni Resitve."
+    else:
+        return res
     
     
 

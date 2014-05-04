@@ -68,15 +68,6 @@ def barvanje_grafa(graf, c):
     
     return formula
 
-
-#primer - cikel na 5 ali 3 tockah, ali ga lahko pobarvamo s 3 barvami
-##E=[["a","b"],["b","c"],["c","d"],["d","e"],["a","e"]]
-E=[['a','b'],['b','c'],['c','a']]
-c=3
-##print E
-##print barvanje_grafa(E, c)
-
-
 #Sudoku
 def Sudoku(sud):
 	
@@ -181,15 +172,15 @@ def Hadamardova_matrika(H):
 
 #primer
 
-H = [ [ 1,  1,  1,  1],
-      [ 1, -1,  1, -1],
-      [ 1,  1, -1, -1],
-      [ 1, -1, -1,  1]]
-
-for i in H:
-    print i
-
-print
-print Hadamardova_matrika(H)
+##H = [ [ 1,  1,  1,  1],
+##      [ 1, -1,  1, -1],
+##      [ 1,  1, -1, -1],
+##      [ 1, -1, -1,  1]]
+##
+##for i in H:
+##    print i
+##
+##print
+##print Hadamardova_matrika(H)
 
 
