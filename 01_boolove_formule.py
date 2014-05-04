@@ -65,14 +65,30 @@ class AND:
                 k += 1
         return '(' + s + ')'
     def evaluate(self):
-        k=1
         for i in self.seznam:
-            if i is not False and i is not True:
-                i = i.evaluate()
-            if i is False:
+            if i==False:
                 return False
-            k+=1
+            elif isinstance(i,AND) or isinstance(i,OR) or isinstance(i,NOT) or isinstance(i,Var):
+                if i.evaluate()==False:
+                    return False
         return True
+    def replace(self, dic):
+        novi_seznam = []
+        for i in self.seznam:
+            if isinstance(i, Var):
+                if i in dic:
+                    novi_seznam.append(i.replace(dic[i]))
+                else:
+                    novi_seznam.append(i)
+            elif isinstance(i, NOT):
+                if i.vrednost in dic:
+                    novi_seznam.append(i.replace(dic[i.vrednost]))
+                else:
+                    novi_seznam.append(i)
+            elif isinstance(i, AND) or isinstance(i, OR):
+                novi_seznam.append(i.replace(dic))
+        self.seznam = novi_seznam
+        return AND(self.seznam)
     def simplify(self):
         prvi = self.seznam[0]
         drugi = self.seznam[1]
@@ -167,11 +183,29 @@ class OR:
         return '(' + s + ')'
     def evaluate(self):
         for i in self.seznam:
-            if i is not False and i is not True:
-                i = i.evaluate()
-            if i is True:
+            if i==True:
                 return True
+            elif isinstance(i,AND) or isinstance(i,OR) or isinstance(i,NOT) or isinstance(i,Var):
+                if i.evaluate()==True:
+                    return True
         return False
+    def replace(self, dic):
+        novi_seznam = []
+        for i in self.seznam:
+            if isinstance(i, Var):
+                if i in dic:
+                    novi_seznam.append(i.replace(dic[i]))
+                else:
+                    novi_seznam.append(i)
+            elif isinstance(i, NOT):
+                if str(i.vrednost) in dic:
+                    novi_seznam.append(i.replace(dic[i.vrednost]))
+                else:
+                    novi_seznam.append(i)
+            elif isinstance(i, AND) or isinstance(i, OR):
+                novi_seznam.append(i.replace(dic))
+        self.seznam = novi_seznam
+        return OR(self.seznam)
     def simplify(self):
         prvi = self.seznam[0]
         drugi = self.seznam[1]
@@ -262,9 +296,20 @@ class NOT():
         return 'NOT ' + str(self.vrednost)
     def evaluate(self):
         i = self.vrednost
-        if i is not False and i is not True:
-            i = i.evaluate()
-        return not i
+        if i==True:
+            return False
+        elif i==False:
+            return True
+        else:
+            return False
+    def replace(self, v):
+        if v==True:
+            self.vrednost=True
+        elif v==False:
+            self.vrednost=False
+        else:
+            self.vrednost = v
+        return NOT(self.vrednost)
     def simplify(self):
     	if isinstance(self.vrednost, NOT):
     		return self.vrednost.vrednost.simplify()
@@ -335,15 +380,55 @@ class Var:
         return id(self)
     def evaluate(self):
         i = self.ime
-        if i is not False and i is not True:
-            i = i.evaluate()
-        return i
+        if i==True:
+            return True
+        elif i==False:
+            return False
+        else:
+            return False
+    def replace(self, v):
+        if v==True:
+            self.ime=True
+        elif v==False:
+            self.ime=False
+        else:
+            self.ime = v
+        return Var(self.ime)
     def flatten(self):
     	return self
     def cno(self):
     	return self
     def simplify(self):
     	return self
+
+
+#OCENJEVANJE
+p = Var(True)
+q = Var(True)
+r = Var(False)
+
+f = AND([p,q, NOT(r), OR([NOT(p),NOT(q),r])])
+print f
+e = f.evaluate()
+print e
+
+#REPLACE
+t = NOT("t")
+t.replace(True)
+print "t",t
+
+t = Var("t")
+u = Var("u")
+v = Var("v")
+
+dic = {t:True, u:True, v:False}
+f1 = AND([t,u, NOT(v), OR([t,u,v])])
+print f1
+print
+f2 = f1.replace(dic)
+print f2
+print f2.evaluate()
+
 
 #test izpisov
 #testni primer za poenostavljanje
@@ -379,10 +464,10 @@ print test_CNO_formula_5.cno()
 p=AND([Var("a"), Var("b")])
 print p.simplify()
 """
-a=Var("a")
-b=Var("b")
-p=AND([NOT(a),NOT(b)])
-p=OR([a,Fls()])
-p=OR([a,Tru()])
-print p.simplify()
+##a=Var("a")
+##b=Var("b")
+##p=AND([NOT(a),NOT(b)])
+##p=OR([a,Fls()])
+##p=OR([a,Tru()])
+##print p.simplify()
 

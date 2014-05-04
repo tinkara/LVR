@@ -156,7 +156,7 @@ def DPLL_alg(f, literali, lahkoDodajamVLiterale):
         else:
             print "resitev", literali
             return True
-
+    
 
 #Metoda, ki sortira formulo ter nato klice dpll algoritem, kjer dobimo resitev.
 #Argument je formula f v CNO.
@@ -178,7 +178,7 @@ def DPLL_sort(f):
                 f_sorted.insert(pos,i)
     f_cno_sorted = bool.AND(f_sorted)
 ##    print "formula sorted: ", f_cno_sorted
-    return DPLL_alg(f_cno_sorted,{}, True)
+    return DPLL_alg(f_cno_sorted,{}, {})
 
 
 #Metoda, ki pozene klic sortiranja (tam pa se pozene algoritem).
@@ -197,3 +197,17 @@ def DPLL(f):
         return "Ni resitve."
     else:
         return res
+
+
+red = __import__('02_redukcija_na_SAT')
+G2 = [['a','b']]
+print G2
+c=2
+G2_SAT = red.barvanje_grafa(G2, c)
+print "G2 SAT"
+print G2_SAT
+print
+G2_SAT_CNO = G2_SAT.cno()
+print "G2_SAT_CNO"
+print G2_SAT_CNO
+print DPLL(G2_SAT_CNO)
