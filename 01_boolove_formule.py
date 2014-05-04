@@ -97,10 +97,10 @@ class AND:
             neg_ime=drugi.vrednost
             temp=prvi
         if neg_ime==temp:
-            return Fls()
+        	return Fls()
         # NOT p AND NOT q = NOT (p OR q)
         if isinstance(prvi, NOT) and isinstance(drugi, NOT):
-        	return NOT(OR(prvi,drugi))
+        	return NOT(OR([prvi.vrednost,drugi.vrednost]))
         # p AND (p OR q) = p, (p OR q) AND p = p
         if isinstance(drugi, OR) and (drugi.seznam[0]==prvi or drugi.seznam[1]==prvi):
         	return prvi
@@ -183,9 +183,9 @@ class OR:
             return Tru()
         # p OR F = p
         elif isinstance(prvi,Fls):
-        	return prvi
+        	return drugi
         elif isinstance(drugi,Fls):
-            return drugi
+            return prvi
         # p OR NOT p = T, NOT p OR p = T
         neg_ime=""
         temp="1"
@@ -378,7 +378,11 @@ print test_CNO_formula_5.cno()
 
 p=AND([Var("a"), Var("b")])
 print p.simplify()
-
-p=NOT(NOT(NOT(Var("a"))))
-print p.simplify()
 """
+a=Var("a")
+b=Var("b")
+p=AND([NOT(a),NOT(b)])
+p=OR([a,Fls()])
+p=OR([a,Tru()])
+print p.simplify()
+

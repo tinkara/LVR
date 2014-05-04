@@ -103,40 +103,42 @@ class Simplify_test(unittest.TestCase):
 ##		p=bool.NOT(bool.NOT(bool.NOT(bool.NOT(bool.Var("a")))))
 ##		t=bool.Var("a")
 ##		self.assertEqual(t, p.simplify(), "napacna poenostavitev, pricakovano a")
-##	def same_vars(self):
-##		"testiranje OR in AND z isto spremenljivko"
-##		a=bool.Var("a")
-##		p= bool.OR([a,a])
-##		self.assertEqual(a,p.simplify(), "napacna poenostavitev, pricakovano a")
-##		p=bool.AND([a,a])
-##		self.assertEqual(a,p.simplify(), "napacna poenostavitev, pricakovano a")
-##	def true_false_var(self):
-##		"testiranje OR in AND, ko je ena spremenljivka true ali false"
-##		a=bool.Var("a")
-##		p=bool.OR(a,bool.Fls())
-##		self.assertEqual(a,p.simplify(), "napacna poenostavitev, pricakovano a")
-##		p=bool.OR(a,bool.Tru())
-##		self.assertEqual(bool.Tru(),p.simplify(), "napacna poenostavitev, pricakovano true")
-##		p=bool.AND(a,bool.Fls())
-##		self.assertEqual(bool.Fls(),p.simplify(), "napacna poenostavitev, pricakovano false")
-##		p=bool.AND(a,bool.Tru())
-##		self.assertEqual(a,p.simplify(), "napacna poenostavitev, pricakovano a")
-##	def p_not_p(self):
-##		a=bool.Var("a")
-##		p=bool.AND([a,bool.NOT(a)])
-##		self.assertEqual(bool.Fls(),p.simplify(), "napacna poenostavitev, pricakovano false")
-##		p=bool.OR([a,bool.NOT(a)])
-##		self.assertEqual(bool.Tru(),p.simplify(), "napacna poenostavitev, pricakovano true")
-##	def complecs(self):
-##		a=bool.Var("p")
-##		b=bool.Var("q")
-##		# NOT p AND NOT q = NOT (p OR q)
-##		p=bool.AND([bool.NOT(a),bool.NOT(b)])
-##		t=bool.NOT(bool.OR([a,b]))
-##		self.assertEqual(t,p.simplify(), "napacna poenostavitev, pricakovano NOT (p OR q)")
-##		# p AND (p OR q) = p
-##		p=bool.AND([a,bool.OR([a5,b])])
-##		self.assertEqual(a,p.simplify(), "napacna poenostavitev, pricakovano p")
+	def test_same_vars(self):
+		"testiranje OR in AND z isto spremenljivko"
+		a=bool.Var("a")
+		p= bool.OR([a,a])
+		self.assertEqual(a,p.simplify(), "napacna poenostavitev, pricakovano a")
+		p=bool.AND([a,a])
+		self.assertEqual(a,p.simplify(), "napacna poenostavitev, pricakovano a")
+	def test_true_false_var(self):
+		"testiranje OR in AND, ko je ena spremenljivka true ali false"
+		a=bool.Var("a")
+		p=bool.OR([a,bool.Fls()])
+		tr=bool.Tru()
+		self.assertEqual(a,p.simplify(), "napacna poenostavitev, pricakovano a")
+		p=bool.OR([a,bool.Tru()])
+		self.assertEqual(bool.Tru(),bool.Tru(), "test")
+		self.assertEqual(bool.Tru(),p.simplify(), "napacna poenostavitev, pricakovano true")
+		p=bool.AND([a,bool.Fls()])
+		self.assertEqual(bool.Fls(),p.simplify(), "napacna poenostavitev, pricakovano false")
+		p=bool.AND([a,bool.Tru()])
+		self.assertEqual(a,p.simplify(), "napacna poenostavitev, pricakovano a")
+	def p_not_p(self):
+		a=bool.Var("a")
+		p=bool.AND([a,bool.NOT(a)])
+		self.assertEqual(bool.Fls(),p.simplify(), "napacna poenostavitev, pricakovano false")
+		p=bool.OR([a,bool.NOT(a)])
+		self.assertEqual(bool.Tru(),p.simplify(), "napacna poenostavitev, pricakovano true")
+	def complecs(self):
+		a=bool.Var("p")
+		b=bool.Var("q")
+		# NOT p AND NOT q = NOT (p OR q)
+		p=bool.AND([bool.NOT(a),bool.NOT(b)])
+		t=bool.NOT(bool.OR([a,b]))
+		self.assertEqual(t,p.simplify(), "napacna poenostavitev, pricakovano NOT (p OR q)")
+		# p AND (p OR q) = p
+		p=bool.AND([a,bool.OR([a5,b])])
+		self.assertEqual(a,p.simplify(), "napacna poenostavitev, pricakovano p")
 
 class DPLL_test(unittest.TestCase):
     def test_dpll(self):
