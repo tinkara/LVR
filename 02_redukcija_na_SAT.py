@@ -21,7 +21,16 @@ except NameError:
 # parameter graf: vhodni graf, je dan kot seznam povezav
 # parameter c: je stevilo barv, s katerimi zelimo pobarvati graf
 def barvanje_grafa(graf, c):
-    formula=[]
+
+    if len(graf)==0:
+        return False
+    if len(graf)==1:
+        if graf[0][0]==graf[0][1] and c==1:
+            return True
+        elif graf[0][0]==graf[0][1] and c!=1:
+            return False
+    
+    formula=bool.AND([])
 
     # vozlisca pobarvana z vsaj eno barvo - And1 in Or1
     # vozlisca pobarvana z najvec eno barvo - And2, And22 in Not2
@@ -47,8 +56,8 @@ def barvanje_grafa(graf, c):
                         l += 1
                 And1.seznam.append(Or1)
                 And2.seznam.append(And22)
-    formula.append(And1)
-    formula.append(And2)
+    formula.seznam.append(And1)
+    formula.seznam.append(And2)
                     
     # dve povezani vozlisci nista iste barve - And3, And32 in Not3
     And3 = bool.AND([])
@@ -61,10 +70,11 @@ def barvanje_grafa(graf, c):
             C_jk = "C"+j+str(k+1)
             var_ik = bool.Var(C_ik)
             var_jk = bool.Var(C_jk)
-            And32.seznam.append(bool.AND([var_ik,var_jk]))
-        Not3 = bool.NOT(And32)
-        And3.seznam.append(Not3)
-    formula.append(And3)
+            And32.seznam.append(bool.NOT(bool.AND([var_ik,var_jk])))
+##        Not3 = bool.NOT(And32)
+##        And3.seznam.append(Not3)
+        And3.seznam.append(And32)
+    formula.seznam.append(And3)
     
     return formula
 

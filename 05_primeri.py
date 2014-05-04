@@ -20,6 +20,10 @@ bool = __import__ ('01_boolove_formule')
 print "OSNOVE"
 print
 
+#konstanti true in false
+print "konstanta true: ",bool.Tru()
+print "konstanta false: ",bool.Fls()
+
 #ustvarjanje spremenljivk
 p = bool.Var('p')
 q = bool.Var('q')
@@ -37,6 +41,27 @@ print "Operand AND: ",f_and
 #OR
 f_or = bool.AND([p,q,r])
 print "Operand OR: ",f_or
+
+print
+print "==================================================================="
+print
+
+#EVALUACIJA
+
+print "EVALUACIJA"
+print
+
+'''
+Klic metode evaluate().
+'''
+
+print "Evaluacia Tru:", bool.Tru().evaluate()
+print "Evaluacija spremenljivke:", bool.Var(False)
+p = bool.Var(True)
+q = bool.Var(True)
+r = bool.Var(False)
+f_eval = bool.AND([p, bool.OR([q,r])])
+print "Formule f =",f_eval," -> evaluacija ", f_eval.evaluate()
 
 print
 print "==================================================================="

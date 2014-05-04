@@ -22,6 +22,8 @@ class Tru():
         pass
     def __repr__(self):
         return "True"
+    def evaluate(self):
+        return True
     def flatten(self):
         return "True"
     def cno(self):
@@ -35,6 +37,8 @@ class Fls():
         pass
     def __repr__(self):
         return "False"
+    def evaluate(self):
+        return False
     def flatten(self):
         return "False"
     def cno(self):
@@ -329,6 +333,11 @@ class Var:
         return False
     def __hash__(self):
         return id(self)
+    def evaluate(self):
+        i = self.ime
+        if i is not False and i is not True:
+            i = i.evaluate()
+        return i
     def flatten(self):
     	return self
     def cno(self):
@@ -337,65 +346,6 @@ class Var:
     	return self
 
 #test izpisov
-##print "OSNOVNI IZPISI: true false var not and or"
-##print Tru()
-##print Fls()
-##p = Var("p")
-##print p
-##print NOT(p)
-##print AND([p,p])
-##print OR([p,p])
-##print
-##
-##print "SESTAVLJENA FORMULA"
-##f = AND(["p", "q", OR(["p","q"])])
-##print f
-##print Tru()
-##
-##q = Var("q")
-##p = Var("p")
-##r = Var("r")
-##
-##formula = NOT(OR([AND([NOT(q), p, r]), NOT(OR([q,NOT(p),Tru()]))]))
-##print formula
-##print
-##
-###test prazen seznam vrne false
-##print "PRAZEN SEZNAM"
-##o = OR([])
-##print o
-##print
-##
-###testni primeri za ocenjevanje vrednosti
-##print "OCENJEVANJE VREDNOSTI"
-###1.
-##x=Var("x")
-##y=Var("y")
-##v = {x: False, y: True}
-##f=OR([AND([NOT(NOT(v[x])),v[y]]),NOT(v[x])])
-##print "Ocena f:"
-##print f
-##print f.evaluate()
-##print
-##
-#2.
-##p=Var("p")
-##q=Var("q")
-##r=Var("r")
-##u = {p: True, q: False, r: True}
-##f1 = AND([OR([u[p],u[q]]),OR([u[q],u[r]]),OR([u[r],u[p]]),NOT(AND([u[p],u[q]])),NOT(AND([u[q],u[r]])),NOT(AND([u[r],u[p]]))])
-##f1 = AND([OR([u[p],u[q]]),OR([u[q],u[r]]),OR([u[r],u[p]]),NOT(AND([u[p],u[q]])),NOT(AND([u[q],u[r]])),AND([u[r],u[p]])])
-##print "Ocena f1:"
-##print f1
-##print f1.evaluate()
-##print
-
-#3.
-##f2=XOR(u[p], u[r])
-##print f2
-##print f2.evaluate()
-
-
 #testni primer za poenostavljanje
 ##p=Var("p")
 ##q=Var("q")
