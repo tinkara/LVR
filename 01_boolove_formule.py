@@ -125,13 +125,13 @@ class AND:
         # (p OR r) AND (q OR r) = (p AND q) OR r
         if isinstance (prvi, OR) and isinstance(drugi, OR):
         	if prvi.seznam[0]==drugi.seznam[0]:
-        		return OR(AND(prvi.seznam[1],drugi.seznam[1]),prvi.seznam[0])
+        		return OR([AND([prvi.seznam[1],drugi.seznam[1]]),prvi.seznam[0]])
         	elif prvi.seznam[0]==drugi.seznam[1]:
-        		return OR(AND(prvi.seznam[1],drugi.seznam[0]),prvi.seznam[0])
+        		return OR([AND([prvi.seznam[1],drugi.seznam[0]]),prvi.seznam[0]])
         	elif prvi.seznam[1]==drugi.seznam[0]:
-        		return OR(AND(prvi.seznam[0],drugi.seznam[1]),prvi.seznam[1])
+        		return OR([AND([prvi.seznam[0],drugi.seznam[1]]),prvi.seznam[1]])
         	elif prvi.seznam[1]==drugi.seznam[1]:
-        		return OR(AND(prvi.seznam[0],drugi.seznam[0]),prvi.seznam[1])
+        		return OR([AND([prvi.seznam[0],drugi.seznam[0]]),prvi.seznam[1]])
         return self
      
     def flatten(self):
@@ -233,22 +233,22 @@ class OR:
             return Tru()
         # NOT p OR NOT q = NOT (p AND q)
         if isinstance(prvi, NOT) and isinstance(drugi, NOT):
-        	return NOT(AND(prvi,drugi))
+        	return NOT(AND([prvi.vrednost,drugi.vrednost]))
         # p OR (p AND q) = p, (p AND q) OR p = p
         if isinstance(drugi, AND) and (drugi.seznam[0]==prvi or drugi.seznam[1]==prvi):
         	return prvi
         elif isinstance(prvi, AND) and (prvi.seznam[0]==drugi or prvi.seznam[1]==drugi):
             return drugi
         # (p AND r) OR (q AND r) = (p OR q) AND r
-        if isinstance (prvi, OR) and isinstance(drugi, OR):
+        if isinstance (prvi, AND) and isinstance(drugi, AND):
         	if prvi.seznam[0]==drugi.seznam[0]:
-        		return AND(OR(prvi.seznam[1],drugi.seznam[1]),prvi.seznam[0])
+        		return AND([OR([prvi.seznam[1],drugi.seznam[1]]),prvi.seznam[0]])
         	elif prvi.seznam[0]==drugi.seznam[1]:
-        		return AND(OR(prvi.seznam[1],drugi.seznam[0]),prvi.seznam[0])
+        		return AND([OR([prvi.seznam[1],drugi.seznam[0]]),prvi.seznam[0]])
         	elif prvi.seznam[1]==drugi.seznam[0]:
-        		return AND(OR(prvi.seznam[0],drugi.seznam[1]),prvi.seznam[1])
+        		return AND([OR([prvi.seznam[0],drugi.seznam[1]]),prvi.seznam[1]])
         	elif prvi.seznam[1]==drugi.seznam[1]:
-        		return AND(OR(prvi.seznam[0],drugi.seznam[0]),prvi.seznam[1])
+        		return AND([OR([prvi.seznam[0],drugi.seznam[0]]),prvi.seznam[1]])
         return self
 
     def flatten(self):
@@ -401,7 +401,7 @@ class Var:
     def simplify(self):
     	return self
 
-
+'''
 #OCENJEVANJE
 p = Var(True)
 q = Var(True)
@@ -429,7 +429,7 @@ f2 = f1.replace(dic)
 print f2
 print f2.evaluate()
 
-
+'''
 #test izpisov
 #testni primer za poenostavljanje
 ##p=Var("p")

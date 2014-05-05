@@ -3,7 +3,7 @@
 import unittest
 bool = __import__ ('01_boolove_formule')
 red = __import__('02_redukcija_na_SAT')
-dpll = __import__('03_DPLL')
+#dpll = __import__('03_DPLL')
 
 # Zdruzljivost za Python 2 in Python 3
 try:
@@ -117,28 +117,44 @@ class Simplify_test(unittest.TestCase):
 		tr=bool.Tru()
 		self.assertEqual(a,p.simplify(), "napacna poenostavitev, pricakovano a")
 		p=bool.OR([a,bool.Tru()])
-		self.assertEqual(bool.Tru(),bool.Tru(), "test")
-		self.assertEqual(bool.Tru(),p.simplify(), "napacna poenostavitev, pricakovano true")
+		self.assertEqual(str(bool.Tru()),str(p.simplify()), "napacna poenostavitev, pricakovano true")
 		p=bool.AND([a,bool.Fls()])
-		self.assertEqual(bool.Fls(),p.simplify(), "napacna poenostavitev, pricakovano false")
+		self.assertEqual(str(bool.Fls()),str(p.simplify()), "napacna poenostavitev, pricakovano false")
 		p=bool.AND([a,bool.Tru()])
 		self.assertEqual(a,p.simplify(), "napacna poenostavitev, pricakovano a")
-	def p_not_p(self):
+	def test_p_not_p(self):
 		a=bool.Var("a")
 		p=bool.AND([a,bool.NOT(a)])
-		self.assertEqual(bool.Fls(),p.simplify(), "napacna poenostavitev, pricakovano false")
+		self.assertEqual(str(bool.Fls()),str(p.simplify()), "napacna poenostavitev, pricakovano false")
 		p=bool.OR([a,bool.NOT(a)])
-		self.assertEqual(bool.Tru(),p.simplify(), "napacna poenostavitev, pricakovano true")
-	def complecs(self):
+		self.assertEqual(str(bool.Tru()),str(p.simplify()), "napacna poenostavitev, pricakovano true")
+	def test_complecs(self):
 		a=bool.Var("p")
 		b=bool.Var("q")
+		c=bool.Var("r")
 		# NOT p AND NOT q = NOT (p OR q)
 		p=bool.AND([bool.NOT(a),bool.NOT(b)])
 		t=bool.NOT(bool.OR([a,b]))
-		self.assertEqual(t,p.simplify(), "napacna poenostavitev, pricakovano NOT (p OR q)")
+		self.assertEqual(str(t),str(p.simplify()), "napacna poenostavitev, pricakovano NOT (p OR q)")
+		# NOT p OR NOT q = NOT (p AND q)
+		p=bool.OR([bool.NOT(a),bool.NOT(b)])
+		t=bool.NOT(bool.AND([a,b]))
+		self.assertEqual(str(t),str(p.simplify()), "napacna poenostavitev, pricakovano NOT (p AND q)")
+		
 		# p AND (p OR q) = p
-		p=bool.AND([a,bool.OR([a5,b])])
+		p=bool.AND([a,bool.OR([a,b])])
 		self.assertEqual(a,p.simplify(), "napacna poenostavitev, pricakovano p")
+		# (p OR r) AND (q OR r) = (p AND q) OR r
+		p=bool.AND([bool.OR([a,b]), bool.OR([c,b])])
+		t=bool.OR([bool.AND([a,c]), b])
+		self.assertEqual(str(t),str(p.simplify()), "napacna poenostavitev, pricakovano (p AND q) OR r")
+		#p OR (p AND q) = p
+		p=bool.OR([a,bool.AND([a,b])])
+		self.assertEqual(a,p.simplify(), "napacna poenostavitev, pricakovano p")
+		#(p AND r) OR (q AND r) = (p OR q) AND r
+		p=bool.OR([bool.AND([a,b]), bool.AND([c,b])])
+		t=bool.AND([bool.OR([a,c]), b])
+		self.assertEqual(str(t),str(p.simplify()), "napacna poenostavitev, pricakovano (p OR q) AND r")
 
 class DPLL_test(unittest.TestCase):
     def test_dpll(self):
