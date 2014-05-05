@@ -72,6 +72,15 @@ print
 print "SIMPLIFY"
 print
 
+'''
+Klic metode simplify()
+'''
+print "Poenostavljanje Tru", bool.Tru().simplify()
+p=bool.OR([bool.AND([a,b]), bool.AND([c,b])])
+print "Poenostavljanje izraza"
+Print "Izraz i=", p, "-> poenostavitev ", p.simplify()
+
+
 print
 print "==================================================================="
 print
@@ -116,6 +125,12 @@ print "==================================================================="
 print
 
 #PRETVORBA V CNO
+print "pretvorba v CNO"
+print 
+'''
+funkcijo poklicemo nad poljubnim izrazom, funkcija pa nam vrne izraz v konjunktivni normalni obliki
+'''
+
 
 print
 print "==================================================================="
