@@ -24,12 +24,16 @@ class Tru():
         return "True"
     def evaluate(self):
         return True
+    def replace(self,v):
+        return True
     def flatten(self):
         return "True"
     def cno(self):
         return "True"
     def simplify(self):
     	return self
+    def simplify_dpll(self):
+        return True
 
 #razred za predstavitev konstante F
 class Fls():
@@ -39,12 +43,16 @@ class Fls():
         return "False"
     def evaluate(self):
         return False
+    def replace(self, v):
+        return False
     def flatten(self):
         return "False"
     def cno(self):
         return "False"
     def simplify(self):
     	return self
+    def simplify_dpll(self):
+        return False
 
 #razred za predstavitev AND
 class AND:
@@ -75,20 +83,63 @@ class AND:
     def replace(self, dic):
         novi_seznam = []
         for i in self.seznam:
-            if isinstance(i, Var):
-                if i in dic:
-                    novi_seznam.append(i.replace(dic[i]))
+
+            if i==True:
+                novi_seznam.append(True)
+            elif i==False:
+                novi_seznam.append(False)
+            elif isinstance(i, Var):
+                if str(i) in dic:
+                    novi_seznam.append(i.replace(dic[str(i)]))
                 else:
                     novi_seznam.append(i)
             elif isinstance(i, NOT):
-                if i.vrednost in dic:
-                    novi_seznam.append(i.replace(dic[i.vrednost]))
+                if str(i.vrednost) in dic:
+                    novi_seznam.append(i.replace(dic[str(i.vrednost)]))
                 else:
                     novi_seznam.append(i)
             elif isinstance(i, AND) or isinstance(i, OR):
-                novi_seznam.append(i.replace(dic))
+            
+                s = i.replace(dic)
+          
+                novi_seznam.append(s)
         self.seznam = novi_seznam
+    
         return AND(self.seznam)
+    def simplify_dpll(self):
+        count = 0
+        new_seznam = []
+        for i in self.seznam:
+            if i==True:
+                new_seznam.append(True)
+                count += 1
+            elif i==False:
+                return False
+            else:
+                if len(i.seznam)==1:
+                    if i.seznam[0]==True:
+                        new_seznam.append(True)
+                        count += 1
+                    elif i.seznam[0]==False:
+                        return False
+                    else:
+                        s = i.seznam[0].simplify_dpll()
+                        if s==False:
+                            return False
+                else:
+                    s = i.simplify_dpll()
+                    if s==False:
+                        return False
+                    if s==True:
+                        new_seznam.append(True)
+                        count += 1
+                    else:
+                        new_seznam.append(s)
+        self.seznam=new_seznam
+        if count==len(self.seznam):
+            return True
+        else:
+            return AND(self.seznam)
     def simplify(self):
         prvi = self.seznam[0]
         drugi = self.seznam[1]
@@ -192,32 +243,64 @@ class OR:
     def replace(self, dic):
         novi_seznam = []
         for i in self.seznam:
+            if isinstance(i, str):
+                i = Var(i)
             if isinstance(i, Var):
-                if i in dic:
-                    novi_seznam.append(i.replace(dic[i]))
+                if str(i) in dic:
+                    novi_seznam.append(i.replace(dic[str(i)]))
                 else:
                     novi_seznam.append(i)
             elif isinstance(i, NOT):
+            
                 if str(i.vrednost) in dic:
-                    novi_seznam.append(i.replace(dic[i.vrednost]))
+                
+                    novi_seznam.append(i.replace(dic[str(i.vrednost)]))
                 else:
                     novi_seznam.append(i)
             elif isinstance(i, AND) or isinstance(i, OR):
                 novi_seznam.append(i.replace(dic))
         self.seznam = novi_seznam
         return OR(self.seznam)
+    def simplify_dpll(self):
+        new_seznam=[]
+        for i in self.seznam:
+            if i==True:
+                return True
+            elif i==False:
+                new_seznam.append(False)
+            elif isinstance(i, str):
+                i = Var(i)
+            elif isinstance(i, NOT):
+                if i.vrednost==True:
+                    new_seznam.append(False)
+                elif i.vrednost==False:
+                    return True
+                else:
+                    new_seznam.append(i.simplify_dpll())
+            elif isinstance(i, Var):
+                if i.ime==False:
+                    new_seznam.append(False)
+                elif i.ime==True:
+                    return True
+                else:
+                    new_seznam.append(i.simplify_dpll())
+            else:
+                new_seznam.append(i.simplify_dpll())
+        self.seznam=new_seznam
+        return OR(self.seznam)
     def simplify(self):
+       
         prvi = self.seznam[0]
         drugi = self.seznam[1]
         # p OR p = p
         if prvi==drugi:
             return prvi
         # p OR T = T, T OR p = T
-        elif isinstance(prvi, Tru) or isinstance(drugi, Tru):
-            return Tru()
+        elif prvi==True or drugi==True:
+            return True
         # p OR F = p
         elif isinstance(prvi,Fls):
-        	return drugi
+            return drugi
         elif isinstance(drugi,Fls):
             return prvi
         # p OR NOT p = T, NOT p OR p = T
@@ -231,9 +314,9 @@ class OR:
             temp=prvi
         if neg_ime==temp:
             return Tru()
-        # NOT p OR NOT q = NOT (p AND q)
-        if isinstance(prvi, NOT) and isinstance(drugi, NOT):
-        	return NOT(AND([prvi.vrednost,drugi.vrednost]))
+        # NOT p OR NOT q = NOT (p AND q) - ne smemo zaradi DPLL
+##        if isinstance(prvi, NOT) and isinstance(drugi, NOT):
+##        	return NOT(AND([prvi.vrednost,drugi.vrednost]))
         # p OR (p AND q) = p, (p AND q) OR p = p
         if isinstance(drugi, AND) and (drugi.seznam[0]==prvi or drugi.seznam[1]==prvi):
         	return prvi
@@ -304,12 +387,19 @@ class NOT():
             return False
     def replace(self, v):
         if v==True:
-            self.vrednost=True
+            return NOT(True)
         elif v==False:
-            self.vrednost=False
+            return NOT(False)
         else:
             self.vrednost = v
-        return NOT(self.vrednost)
+            return NOT(self.vrednost)
+    def simplify_dpll(self):
+        if self.vrednost==True:
+            return False
+        elif self.vrednost==False:
+            return True
+        else:
+            return NOT(self.vrednost)
     def simplify(self):
     	if isinstance(self.vrednost, NOT):
     		return self.vrednost.vrednost.simplify()
@@ -388,12 +478,19 @@ class Var:
             return False
     def replace(self, v):
         if v==True:
-            self.ime=True
+            return True
         elif v==False:
-            self.ime=False
+            return False
         else:
             self.ime = v
         return Var(self.ime)
+    def simplify_dpll(self):
+        if self.ime==True:
+            return True
+        elif self.ime==False:
+            return False
+        else:
+            return self.ime
     def flatten(self):
     	return self
     def cno(self):

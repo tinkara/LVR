@@ -21,142 +21,105 @@ except NameError:
 #f je logicni izraz v CNO
 #literali so seznam literalov, za katere vemo vrednosti (in se ne smejo spreminjati)
 #lahkoDodajamoVLiterale je True/False vrednost, ki pove ali smem spr spreminjati (ce da, je ne smem dati v literale)
-def DPLL_alg(f, literali, lahkoDodajamVLiterale):
-    print
-    print "formula",f
-    print
-    print "literali", literali
-    print "lahko dodajam", lahkoDodajamVLiterale
-    ostalo = [] #seznam ORov, kjer ne vemo vrednosti niti enega literala notri
+def DPLL_alg(f, restore, literali, spr, formula):
+    ostalo = []
+    boTrue = False
     for i in f.seznam:
-        print "i v f", i
-        #dolocimo literale
-        if isinstance(i, bool.Var):
-            if not str(i) in literali and lahkoDodajamVLiterale:
-                literali[str(i)] = True
-            elif str(i) in literali:
-                if not literali[str(i)]:
-                    print "var vracam false"
-                    return False
-        
-        #dolocimo not literale
+        if i==False: return False
+        elif i==True: pass
+        elif isinstance(i, bool.Var):
+            if str(i) in literali:
+                if literali[str(i)]==False: return [False,{}]
+            else: literali[str(i)] = True
         elif isinstance(i, bool.NOT):
-            if not str(i.vrednost) in literali and lahkoDodajamVLiterale:
-                literali[str(i.vrednost)] = False
-            elif str(i.vrednost) in literali:
-                if literali[str(i.vrednost)]:
-                    print "not vracam false"
-                    return False
-
-        #dolocimo kar nam ostane
+            if str(i.vrednost) in literali:
+                if literali[str(i.vrednost)]==True: return [False,{}]
+            else: literali[str(i.vrednost)] = False
         else:
-            vSeznamuLiteralov = False
-            for j in i.seznam:
-                if isinstance(j, bool.Var) and str(j) in literali:
-                    if literali[str(j)]:
-                        vSeznamuLiteralov=True
-            if not vSeznamuLiteralov:
-                ostalo.append(i)
-
-   
-    print "konec for"
-    print "literali", literali
-    print "ostalo", ostalo 
-    if len(ostalo)==0:
-        print "resitev", literali
-        return True
-    
-    else:        #spremenljivkam potrebno dolociti vrednosti - BF
-        seLahkoSpremeni = []    #seznam, ki hrani tiste spr, ki jih lahko spreminjamo   
-        niResitve = False
-        while len(ostalo)>0 and not niResitve:
-            print "se lahko spremeni", seLahkoSpremeni
-            k = ostalo[0]
-            print "delam k", k
-            #preverimo ali se kateri izmed nastopajocih nahaja v literalih
-            #ali ce je sestavljena iz samih NOT
-            #ustvarimo nov (poenostavljen) OR seznam
-            vSeznamuLiteralov = False
-            or_seznam = []
             count = 0
-            countList = []
-            for j in k.seznam:
-                print "delam", j
+            for j in i.seznam:
                 if isinstance(j, bool.Var):
-                    if str(j) in literali:
-                        vSeznamuLiteralov=True
-                    elif str(j) not in seLahkoSpremeni :
-                        seLahkoSpremeni.append(str(j))
-                    or_seznam.append(j)
-                elif isinstance(j, bool.NOT):
-                    if str(j.vrednost) in literali:
-                        if literali[str(j.vrednost)]:
-                            count += 1
-                            countList.append(j)
-                    elif str(j.vrednost) not in seLahkoSpremeni:
-                        seLahkoSpremeni.append(str(j.vrednost))
-                        or_seznam.append(j)
+                    if str(j) not in literali:
+                        ostalo.append(str(j))
+                if isinstance(j, bool.NOT):
+                    if str(j.vrednost) not in literali:
+                            ostalo.append(str(j.vrednost))
                     else:
-                        or_seznam.append(j)
-                if vSeznamuLiteralov and not DPLL_alg(bool.OR([j]),literali,False):
-                    niResitve = True
-                elif vSeznamuLiteralov:
-                    print "sem not"
-                    or_seznam = []
-
-            print "se lahko spremeni", seLahkoSpremeni
-            print "or_seznam", or_seznam
-            print "k.seznam",k.seznam
-            if count==len(k.seznam):    #sami NOT, ki imajo znane literale, sledi ni resitve
-                print "preverjam ni resitve"
-                counter = 0
-                print "count list",countList
-                for i in countList:
-                    if str(i.vrednost) in literali and str(i.vrednost) not in seLahkoSpremeni:  
-                        counter += 1
-                    else:
-                        or_seznam.append(i)
-                    print counter
-                if counter == len(k.seznam):
-                    print "tu bo ni resitve"
-                    niResitve = True
-                else:
-                    print "nov or_seznam", or_seznam
-                print "ni r", niResitve
-                       
-            if not niResitve:
-                print "pogoji", not vSeznamuLiteralov, not niResitve, len(k.seznam)!=0
-                k=bool.OR(or_seznam)
-                if (not vSeznamuLiteralov) and not niResitve and len(k.seznam)!=0:
-                    key = k.seznam[0]
-                    keyNOT=""
-                    if isinstance(key, bool.NOT):
-                        keyNOT = str(k.seznam[0].vrednost)
-                    true = ""
-                    if isinstance(key, bool.NOT) and str(keyNOT) in seLahkoSpremeni:
-                        literali[keyNOT] = True
-                        print "nastavim", keyNOT," na True"
-                        true = DPLL_alg(k, literali, False)
-                    elif str(key) in seLahkoSpremeni:
-                        literali[str(key)] = True
-                        true = DPLL_alg(k, literali, False)
-                    print "true prvic", true
-                    if not true:
-                        print "popravljam true"
-                        if isinstance(key, bool.NOT) and str(keyNOT) in seLahkoSpremeni:
-                            literali[keyNOT] = False
-                            true = DPLL_alg(k, literali, False)
-                        elif str(key) in seLahkoSpremeni:
-                            literali[str(key)] = False
-                            true = DPLL_alg(k, literali, False)
-                    print "true drugic" ,true
-                del ostalo[0]
-        if niResitve:
-            return False
-        else:
-            print "resitev", literali
-            return True
+                        count += 1
+            #ce imamo same NOT in je vse v literalih -> ni resitve
+            if count==len(i.seznam): return [False,{}]
     
+    temp = f.replace(literali)
+    simpl = temp.simplify_dpll()
+    if simpl==True: return [True, literali]
+    if simpl.simplify_dpll()==True: return [True, literali]
+    else: return DPLL_BF(f,restore, ostalo, literali)
+
+def DPLL_BF(f,copy, ostalo, spr):
+
+    if f==True: return [True, spr]
+    elif f==False: return [False, spr]
+    
+    if len(ostalo)>0:
+        name = str(ostalo[0])
+        spr[name] = True
+        del ostalo[0]
+
+        temp = f.replace(spr)
+        simpl = temp.simplify_dpll()
+        result = DPLL_BF(simpl, copy, ostalo, spr)
+        if result[0]==True: return result
+        else:
+            spr[name] = False
+            f = restore(copy)
+            temp = f.replace(spr)
+            simpl = temp.simplify_dpll()
+            result = DPLL_BF(simpl,copy, ostalo, spr)
+    return [True, spr]
+    
+    
+def copy(f):
+    and_list = []
+    for i in f.seznam:
+        or_list = []
+        if (isinstance(i, bool.Var) or isinstance(i, bool.NOT) or i==True or i==False):
+            and_list.append(i)
+        else:
+            for j in i.seznam:
+                new_var=""
+                if isinstance(j, bool.Var):
+                    name = "copy_"+str(j.ime)
+                    new_var = bool.Var(name)
+                else:
+                    name = "copy_"+str(j.vrednost)
+                    new_var = bool.NOT(bool.Var(name))
+                or_list.append(new_var)
+            bool_or = bool.OR(or_list)
+            and_list.append(bool_or)
+    copy = bool.AND(and_list)
+    return copy
+
+def restore(copy):
+    and_list = []
+    for i in copy.seznam:
+        or_list = []
+        if (isinstance(i, bool.Var) or isinstance(i, bool.NOT) or i==True or i==False):
+            and_list.append(i)
+        else: 
+            for j in i.seznam:
+                new_var=""
+                if isinstance(j, bool.Var):
+                    name = str(j.ime)[5:]
+                    new_var = bool.Var(name)
+                else:
+                    name = str(j.vrednost)[5:]
+                    new_var = bool.NOT(bool.Var(name))
+                or_list.append(new_var)
+            bool_or = bool.OR(or_list)
+            and_list.append(bool_or)
+    f = bool.AND(and_list)
+    return f
+
 
 #Metoda, ki sortira formulo ter nato klice dpll algoritem, kjer dobimo resitev.
 #Argument je formula f v CNO.
@@ -177,8 +140,13 @@ def DPLL_sort(f):
             else:
                 f_sorted.insert(pos,i)
     f_cno_sorted = bool.AND(f_sorted)
+   
+    print
+    c = copy(f_cno_sorted)
+##    print "kopija", c
 ##    print "formula sorted: ", f_cno_sorted
-    return DPLL_alg(f_cno_sorted,{}, {})
+    return DPLL_alg(f_cno_sorted,c,{},{}, bool.AND([]))
+
 
 
 #Metoda, ki pozene klic sortiranja (tam pa se pozene algoritem).
@@ -193,10 +161,10 @@ def DPLL(f):
     elif isinstance(f, bool.Fls):
         return False
     res = DPLL_sort(f)
-    if not res:
+    if res[0]==False:
         return "Ni resitve."
     else:
-        return res
+        return res[1]
 
 
 red = __import__('02_redukcija_na_SAT')
@@ -211,3 +179,8 @@ G2_SAT_CNO = G2_SAT.cno()
 print "G2_SAT_CNO"
 print G2_SAT_CNO
 print DPLL(G2_SAT_CNO)
+
+##f = bool.AND([bool.Var("p"), bool.Var("q"),bool.OR([bool.Var("p"),bool.NOT(bool.Var("q")), bool.NOT(bool.Var("p"))])])
+##print f
+##print DPLL(f)
+
