@@ -41,7 +41,7 @@ sudoku1 = [[None, 8, None, 1, 6, None, None, None, 7],
 			[None, None, 6, 7, None, 1, 9, None, 3],
 			[7, None, None, None, 9, 6, None, 4, None]]
 
-sudoku2 = [[6,9,2,3,4,8,1,5,7],
+sudoku2 = [[None,9,2,3,4,8,1,5,7],
            [7,4,3,5,6,1,9,8,2],
            [8,1,5,2,9,7,6,3,4],
            [5,8,6,1,2,3,7,4,9],
@@ -51,9 +51,9 @@ sudoku2 = [[6,9,2,3,4,8,1,5,7],
            [1,2,7,8,3,6,4,9,5],
            [3,6,4,9,1,5,2,7,8]]
 
-print Sudoku_print(sudoku1)
+print Sudoku_print(sudoku2)
 
-sudoku_SAT = red.Sudoku(sudoku1)
+sudoku_SAT = red.Sudoku(sudoku2)
 print sudoku_SAT
 
 sudoku_SAT_CNO = sudoku_SAT.cno()
