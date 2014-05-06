@@ -75,10 +75,10 @@ print
 '''
 Klic metode simplify()
 '''
-print "Poenostavljanje Tru", bool.Tru().simplify()
-p=bool.OR([bool.AND([a,b]), bool.AND([c,b])])
-print "Poenostavljanje izraza"
-Print "Izraz i=", p, "-> poenostavitev ", p.simplify()
+##print "Poenostavljanje Tru", bool.Tru().simplify()
+##p=bool.OR([bool.AND([a,b]), bool.AND([c,b])])
+##print "Poenostavljanje izraza"
+##Print "Izraz i=", p, "-> poenostavitev ", p.simplify()
 
 
 print
@@ -93,7 +93,7 @@ red = __import__ ('02_redukcija_na_SAT')
 print "REDUKCIJA NA SAT"
 print
 
-#BARVANJE GRAFA
+#1. BARVANJE GRAFA
 '''
 Graf je podan kot seznam povezav med tockami v grafu.
 '''
@@ -116,7 +116,7 @@ print
 print "poln graf SAT:", poln_graf_sat
 print
 
-#SUDOKU
+#2. SUDOKU
 print "2. Sudoku"
 print
 
@@ -145,13 +145,13 @@ print "DPLL"
 print
 
 '''
-Formula mora biti podana v CNO. Ce temu ni tako,
-jo je potrebno predhodno pretvoriti.
-
 Kot resitev dobimo slovar spremenljivk in njihove vrednosti.
 Ce se spremenljivka ne nahaja v slovarju, je lahko kar koli (ali True
 ali False). Glej primer 2.
 Ce je formula neresljiva, se izpise "Ni resitve.". Glej primer 3.
+
+Formula mora biti podana v CNO. Ce temu ni tako,
+jo je potrebno predhodno pretvoriti. Glej primer 4.
 '''
 
 p = bool.Var('p')
@@ -176,7 +176,13 @@ print "Formula 3:", f3
 print "Resitev 3:", res3
 print
 
-
+f4=bool.AND([p,q, bool.NOT(bool.OR([bool.NOT(p),r]))])
+f4_cno=f4.cno()
+res4 = dpll.DPLL(f4_cno)
+print "Formula 4:", f4
+print "Formula 4 v CNO", f4_cno
+print "Resitev 4:", res4
+print
 
 
 

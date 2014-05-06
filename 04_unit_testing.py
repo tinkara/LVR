@@ -3,7 +3,7 @@
 import unittest
 bool = __import__ ('01_boolove_formule')
 red = __import__('02_redukcija_na_SAT')
-#dpll = __import__('03_DPLL')
+dpll = __import__('03_DPLL')
 
 # Zdruzljivost za Python 2 in Python 3
 try:
@@ -59,23 +59,34 @@ class red_test(unittest.TestCase):
         self.assertEqual(red.barvanje_grafa(G1,2), False)
 
         #graf na dveh tockah
-        #(tocka a pobarvana z barvo 1, tocka b pobarvana z barvo2)
-##        G2 = [['a','b']]
-##        print G2
-##        c=2
-##        G2_SAT = red.barvanje_grafa(G2, c)
-##        print "G2 SAT"
-##        print G2_SAT
-##        print
-##        G2_SAT_CNO = G2_SAT.cno()
-##        print "G2_SAT_CNO"
-##        print G2_SAT_CNO
-##        print dpll.DPLL(G2_SAT_CNO)
-##        self.assertEqual(dpll.DPLL(G2_SAT_CNO),{'Ca1': True, 'Ca2': False, 'Cb1': True, 'Cb2': False})
+        G2 = [['a','b']]
+        #na eni barvi
+        c=1
+        self.assertEqual(dpll.DPLL(red.barvanje_grafa(G2, c)), False)
+        #na dveh barvah
+        c=2
+        self.assertEqual(dpll.DPLL((red.barvanje_grafa(G2,c)).cno()), {'Ca1': True,'Ca2': False,'Cb1': False, 'Cb2': True})
+        #na petih barvah
+        c=5
+        self.assertEqual(dpll.DPLL((red.barvanje_grafa(G2,c)).cno()), {'Ca1': True, 'Ca2': False, 'Ca3': False, 'Ca4': False, 'Ca5': False, 'Cb2': True,'Cb1': False, 'Cb3': False, 'Cb4': False, 'Cb5': False})
 
-        ##        G2 = [['a','b'],['b','c'],['c','a']]
-        
+        #poln graf na 4 tockah
+        G4 = [['a','b'],['a','c'],['a','d'],['b','c'],['b','d'],['c','d']]
+        #na treh barvah
+        c=3
+        self.assertEqual(dpll.DPLL((red.barvanje_grafa(G4,c)).cno()), "Ni resitve.")
+        #na stirih barvah
+        c=4
+        self.assertEqual(dpll.DPLL((red.barvanje_grafa(G4,c)).cno()),{'Ca1': True, 'Cb2': True, 'Cc3': True, 'Cd4': True, 'Cd2': False, 'Ca3': False, 'Ca2': False, 'Cd3': False, 'Cc1': False, 'Ca4': False, 'Cb3': False, 'Cb1': False, 'Cd1': False, 'Cb4': False, 'Cc4': False, 'Cc2': False})
 
+        #cikel na 7 tockah
+        G7 = [['a','b'],['b','c'],['c','d'],['d','e'],['e','f'],['f','g'],['g','a']]
+        #na dveh barvah
+        c=2
+        self.assertEqual(dpll.DPLL((red.barvanje_grafa(G7,c)).cno()), "Ni resitve.")
+        #na treh barvah
+        c=3
+        self.assertEqual(dpll.DPLL((red.barvanje_grafa(G7,c)).cno()), {'Cg2': False, 'Ce1': True, 'Ca3': False, 'Ca2': False, 'Ca1': True, 'Cc1': True, 'Cc3': False, 'Cc2': False, 'Cb2': True, 'Cb3': False, 'Cb1': False, 'Ce3': False, 'Cd1': False, 'Cd2': True, 'Cd3': False, 'Cg1': False, 'Cg3': True, 'Cf1': False, 'Cf2': True, 'Cf3': False, 'Ce2': False})
         
     def test_sudoku(self):
         pass
@@ -103,7 +114,7 @@ class Simplify_test(unittest.TestCase):
 ##		p=bool.NOT(bool.NOT(bool.NOT(bool.NOT(bool.Var("a")))))
 ##		t=bool.Var("a")
 ##		self.assertEqual(t, p.simplify(), "napacna poenostavitev, pricakovano a")
-	def test_same_vars(self):
+	'''def test_same_vars(self):
 		"testiranje OR in AND z isto spremenljivko"
 		a=bool.Var("a")
 		p= bool.OR([a,a])
@@ -154,7 +165,7 @@ class Simplify_test(unittest.TestCase):
 		#(p AND r) OR (q AND r) = (p OR q) AND r
 		p=bool.OR([bool.AND([a,b]), bool.AND([c,b])])
 		t=bool.AND([bool.OR([a,c]), b])
-		self.assertEqual(str(t),str(p.simplify()), "napacna poenostavitev, pricakovano (p OR q) AND r")
+		self.assertEqual(str(t),str(p.simplify()), "napacna poenostavitev, pricakovano (p OR q) AND r")'''
 
 class DPLL_test(unittest.TestCase):
     def test_dpll(self):
@@ -163,32 +174,33 @@ class DPLL_test(unittest.TestCase):
         r = bool.Var('r')
         s = bool.Var('s')
         t = bool.Var('t')
-##        #konstanti
-##        self.assertEqual(dpll.DPLL(bool.Tru()), True)
-##        self.assertEqual(dpll.DPLL(bool.Fls()), False)
-##        #spremenljivka in negacija
-##        self.assertEqual(dpll.DPLL(p), {'p':True})
-##        self.assertEqual(dpll.DPLL(bool.NOT(p)), {'p':False})
-##        #prazen AND
-##        f1 = bool.AND([])
-##        self.assertEqual(dpll.DPLL(f1), "Ni resitve.")
-##        #AND z eno spr
-##        f2 = bool.AND([p])
-##        self.assertEqual(dpll.DPLL(f2), {'p':True})
-##        f3 = bool.AND([bool.NOT(p)])
-##        self.assertEqual(dpll.DPLL(f3), {'p':False})
-##        # p A NOT p
-##        f4 = bool.AND([p, bool.NOT(p)])
-##        self.assertEqual(dpll.DPLL(f4), "Ni resitve.")
-##        # p A q A (NOT p V NOT q)
-##        f5 = bool.AND([p, q, bool.OR([bool.NOT(p), bool.NOT(q)])])
-##        self.assertEqual(dpll.DPLL(f5), "Ni resitve.")
-##        #sami literali
-##        f6 = bool.AND([p,q,r,s,bool.NOT(t)])
-##        self.assertEqual(dpll.DPLL(f6), {'q': True, 'p': True, 's': True, 'r': True, 't': False})
-##        # brez literalov - (p V q) A (NOT p V NOT q)
-##        f7 = bool.AND([bool.OR([p,q]), bool.OR([bool.NOT(p), bool.NOT(q)])])    
-##        self.assertEqual(dpll.DPLL(f7), {'p':True, 'q':False})
+        #konstanti
+        self.assertEqual(dpll.DPLL(bool.Tru()), True)
+        self.assertEqual(dpll.DPLL(bool.Fls()), False)
+        #spremenljivka in negacija
+        self.assertEqual(dpll.DPLL(p), {'p':True})
+        self.assertEqual(dpll.DPLL(bool.NOT(p)), {'p':False})
+        #prazen AND
+        f1 = bool.AND([])
+        self.assertEqual(dpll.DPLL(f1), "Ni resitve.")
+        #AND z eno spr
+        f2 = bool.AND([p])
+        self.assertEqual(dpll.DPLL(f2), {'p':True})
+        #AND z enim NOT
+        f3 = bool.AND([bool.NOT(p)])
+        self.assertEqual(dpll.DPLL(f3), {'p':False})
+        # p A NOT p
+        f4 = bool.AND([p, bool.NOT(p)])
+        self.assertEqual(dpll.DPLL(f4), "Ni resitve.")
+        # p A q A (NOT p V NOT q)
+        f5 = bool.AND([p, q, bool.OR([bool.NOT(p), bool.NOT(q)])])
+        self.assertEqual(dpll.DPLL(f5), "Ni resitve.")
+        #sami literali
+        f6 = bool.AND([p,q,r,s,bool.NOT(t)])
+        self.assertEqual(dpll.DPLL(f6), {'q': True, 'p': True, 's': True, 'r': True, 't': False})
+        # brez literalov - (p V q) A (NOT p V NOT q)
+        f7 = bool.AND([bool.OR([p,q]), bool.OR([bool.NOT(p), bool.NOT(q)])])
+        self.assertEqual(dpll.DPLL(f7), {'p':True, 'q':False})
 
 if __name__ == '__main__':
     unittest.main()

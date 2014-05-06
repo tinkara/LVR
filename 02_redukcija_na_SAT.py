@@ -3,8 +3,7 @@
 #
 # naloga 1 - barvanje grafov
 # naloga 2 - sudoku
-# naloga 3 - Hadamardova matrika
-###################################################################
+####################################################################
 
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
@@ -21,7 +20,6 @@ except NameError:
 # parameter graf: vhodni graf, je dan kot seznam povezav
 # parameter c: je stevilo barv, s katerimi zelimo pobarvati graf
 def barvanje_grafa(graf, c):
-
     if len(graf)==0:
         return False
     if len(graf)==1:
@@ -29,7 +27,10 @@ def barvanje_grafa(graf, c):
             return True
         elif graf[0][0]==graf[0][1] and c!=1:
             return False
-    
+        elif c==1:
+            return False
+    elif c<=1:
+        return False
     formula=bool.AND([])
 
     # vozlisca pobarvana z vsaj eno barvo - And1 in Or1
@@ -71,11 +72,8 @@ def barvanje_grafa(graf, c):
             var_ik = bool.Var(C_ik)
             var_jk = bool.Var(C_jk)
             And32.seznam.append(bool.NOT(bool.AND([var_ik,var_jk])))
-##        Not3 = bool.NOT(And32)
-##        And3.seznam.append(Not3)
         And3.seznam.append(And32)
     formula.seznam.append(And3)
-    
     return formula
 
 #Sudoku
@@ -150,47 +148,5 @@ sudo = \
 ##sudoku_formula = Sudoku(sudo)
 ##
 ##print sudoku_formula.__repr__()
-
-#Hadamardova matrika
-def Hadamardova_matrika(H):
-    n=len(H)
-    if n==1:
-        if H[0]== 1: return True
-        else: return False
-    if n==0 or len(H)%2==1:
-        return False
-
-    formula = []
-    #vrstica i
-    for i in range(n-1):
-        
-        #vrstica j
-        for j in range(i+1, n):
-            xor=[]
-            #xor med dvema vrsticama
-            for k in range(n):
-                prva  = "vr" +str(i)+ "_st"+str(k)
-                druga = "vr" +str(j)+ "_st"+str(k)
-                print bool.XOR(prva, druga)
-                xor.append(bool.XOR(prva, druga))
-            print xor
-            print
-            #xor, ki ga dobimo zgoraj mora imeti n/2 istih vrednosti
-            
-
-
-
-#primer
-
-##H = [ [ 1,  1,  1,  1],
-##      [ 1, -1,  1, -1],
-##      [ 1,  1, -1, -1],
-##      [ 1, -1, -1,  1]]
-##
-##for i in H:
-##    print i
-##
-##print
-##print Hadamardova_matrika(H)
 
 

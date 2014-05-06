@@ -83,7 +83,6 @@ class AND:
     def replace(self, dic):
         novi_seznam = []
         for i in self.seznam:
-
             if i==True:
                 novi_seznam.append(True)
             elif i==False:
@@ -99,12 +98,9 @@ class AND:
                 else:
                     novi_seznam.append(i)
             elif isinstance(i, AND) or isinstance(i, OR):
-            
                 s = i.replace(dic)
-          
                 novi_seznam.append(s)
         self.seznam = novi_seznam
-    
         return AND(self.seznam)
     def simplify_dpll(self):
         count = 0
@@ -115,6 +111,12 @@ class AND:
                 count += 1
             elif i==False:
                 return False
+            elif isinstance(i, NOT):
+                s = i.simplify_dpll()
+                if s==False:
+                    return False
+                else:
+                    new_seznam.append(s)
             else:
                 if len(i.seznam)==1:
                     if i.seznam[0]==True:
@@ -251,9 +253,7 @@ class OR:
                 else:
                     novi_seznam.append(i)
             elif isinstance(i, NOT):
-            
                 if str(i.vrednost) in dic:
-                
                     novi_seznam.append(i.replace(dic[str(i.vrednost)]))
                 else:
                     novi_seznam.append(i)
@@ -263,16 +263,19 @@ class OR:
         return OR(self.seznam)
     def simplify_dpll(self):
         new_seznam=[]
+        count = 0
         for i in self.seznam:
             if i==True:
                 return True
             elif i==False:
                 new_seznam.append(False)
+                count += 1
             elif isinstance(i, str):
                 i = Var(i)
             elif isinstance(i, NOT):
                 if i.vrednost==True:
                     new_seznam.append(False)
+                    count += 1
                 elif i.vrednost==False:
                     return True
                 else:
@@ -280,6 +283,7 @@ class OR:
             elif isinstance(i, Var):
                 if i.ime==False:
                     new_seznam.append(False)
+                    count += 1
                 elif i.ime==True:
                     return True
                 else:
@@ -287,9 +291,10 @@ class OR:
             else:
                 new_seznam.append(i.simplify_dpll())
         self.seznam=new_seznam
+        if count==len(self.seznam):
+            return False
         return OR(self.seznam)
     def simplify(self):
-       
         prvi = self.seznam[0]
         drugi = self.seznam[1]
         # p OR p = p
@@ -333,7 +338,6 @@ class OR:
         	elif prvi.seznam[1]==drugi.seznam[1]:
         		return AND([OR([prvi.seznam[0],drugi.seznam[0]]),prvi.seznam[1]])
         return self
-
     def flatten(self):
     	if len(self.seznam)==1:
     		return self.seznam[0].flatten()
@@ -352,7 +356,6 @@ class OR:
     				return l[0]
     			else:
     				return OR(sez)
-
     def cno(self):
     	"konjunktivna normalna oblika"
     	if len(self.seznam)==0:
@@ -432,29 +435,7 @@ class NOT():
     		nots=[NOT(a) for a in self.vrednost.seznam]
     		return AND(nots).cno()
     	else:
-    		return self
-
-
-#razred za predstavitev XOR
-class XOR:
-    def __init__(self, p, q):
-        self.p=p
-        self.q=q
-    def __repr__(self):
-        return AND([OR([self.p,self.q]),NOT(AND([self.p,self.q]))]).__repr__()
-    def evaluate(self):
-        return AND([OR([self.p,self.q]),NOT(AND([self.p,self.q]))]).evaluate()
-
-#razred za predstavitev EKVIVALENCE
-class EQ:
-	def __init(self,p,q):
-		self.p=p
-		self.q=q
-	def __repr__(self):
-		return AND([OR([NOT(self.p),self.q]),OR(NOT(self.q),self.p)]).__repr__()
-	def evaluate(self):
-		return AND([OR([NOT(self.p),self.q]),OR(NOT(self.q),self.p)]).evaluate()
-            
+    		return self            
 
 #razred za predstavitev spremenljivke
 class Var:
@@ -498,35 +479,7 @@ class Var:
     def simplify(self):
     	return self
 
-'''
-#OCENJEVANJE
-p = Var(True)
-q = Var(True)
-r = Var(False)
 
-f = AND([p,q, NOT(r), OR([NOT(p),NOT(q),r])])
-print f
-e = f.evaluate()
-print e
-
-#REPLACE
-t = NOT("t")
-t.replace(True)
-print "t",t
-
-t = Var("t")
-u = Var("u")
-v = Var("v")
-
-dic = {t:True, u:True, v:False}
-f1 = AND([t,u, NOT(v), OR([t,u,v])])
-print f1
-print
-f2 = f1.replace(dic)
-print f2
-print f2.evaluate()
-
-'''
 #test izpisov
 #testni primer za poenostavljanje
 ##p=Var("p")

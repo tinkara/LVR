@@ -19,7 +19,7 @@ V repozitoriju se nahajajo naslednje datoteke:
    
 - 02_redukcija_na_SAT.py: vsebuje 2 metodi, ki predstavljata prevod dveh problemov na SAT (klic metode z barvanje_grafov(graf, st_barv) in sudoku(primer_sudokuja))
 
-- 03_DPLL.py: vsebuje 1 metodo, ki je implementacija DPLL algoritma (klic z DPLL(formula))
+- 03_DPLL.py: vsebuje metode, ki so implementacija DPLL algoritma (klic z DPLL(formula_v_cno_obliki))
 
 NAVODILA ZA UPORABO:
 
@@ -28,7 +28,6 @@ kako uporabljati strukture in klicati metode.
 
 
 UNITTEST:
-
 Tu se nahajajo testi, ki se avtomatsko zaženejo. Tu se nahajajo različni testi delovanja vseh metod ter obnašanje pri robnih primerih.
    
 

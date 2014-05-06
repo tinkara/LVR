@@ -19,9 +19,9 @@ except NameError:
 
 #Meoda, ki je implementacija DPLL algoritma.
 #f je logicni izraz v CNO
-#literali so seznam literalov, za katere vemo vrednosti (in se ne smejo spreminjati)
-#lahkoDodajamoVLiterale je True/False vrednost, ki pove ali smem spr spreminjati (ce da, je ne smem dati v literale)
-def DPLL_alg(f, restore, literali, spr, formula):
+#restore je kopija formule f
+def DPLL_alg(f, restore):
+    literali = {}
     ostalo = []
     boTrue = False
     for i in f.seznam:
@@ -29,55 +29,69 @@ def DPLL_alg(f, restore, literali, spr, formula):
         elif i==True: pass
         elif isinstance(i, bool.Var):
             if str(i) in literali:
-                if literali[str(i)]==False: return [False,{}]
-            else: literali[str(i)] = True
+                if literali[str(i)]==False:
+                    return [False,{}]
+            else:
+                literali[str(i)] = True
         elif isinstance(i, bool.NOT):
             if str(i.vrednost) in literali:
-                if literali[str(i.vrednost)]==True: return [False,{}]
-            else: literali[str(i.vrednost)] = False
+                if literali[str(i.vrednost)]==True:
+                    return [False,{}]
+            else:
+                literali[str(i.vrednost)] = False
         else:
             count = 0
             for j in i.seznam:
                 if isinstance(j, bool.Var):
-                    if str(j) not in literali:
+                    if str(j) not in literali and str(j) not in ostalo:
                         ostalo.append(str(j))
                 if isinstance(j, bool.NOT):
-                    if str(j.vrednost) not in literali:
+                    if str(j.vrednost) not in literali and str(j.vrednost) not in ostalo:
                             ostalo.append(str(j.vrednost))
-                    else:
+                    elif str(j.vrednost) in literali:
                         count += 1
             #ce imamo same NOT in je vse v literalih -> ni resitve
-            if count==len(i.seznam): return [False,{}]
-    
+            if count==len(i.seznam): return [False,{}]  
     temp = f.replace(literali)
     simpl = temp.simplify_dpll()
     if simpl==True: return [True, literali]
     if simpl.simplify_dpll()==True: return [True, literali]
     else: return DPLL_BF(f,restore, ostalo, literali)
 
+#Metoda DPLL algortima, ki izvaja brute force iskanje resitev
+#f je formula
+#copy je kopija formule f
+#ostalo je seznam spremenljivk, za katere ne poznamo vrednosti
+#spr je slovar spremenljivk in njihovih vrednosti
 def DPLL_BF(f,copy, ostalo, spr):
-
     if f==True: return [True, spr]
     elif f==False: return [False, spr]
-    
     if len(ostalo)>0:
+        #probamo s True
         name = str(ostalo[0])
         spr[name] = True
         del ostalo[0]
-
         temp = f.replace(spr)
         simpl = temp.simplify_dpll()
         result = DPLL_BF(simpl, copy, ostalo, spr)
         if result[0]==True: return result
         else:
+            #vrnemo v prejsnje stanje in probamo s False
             spr[name] = False
             f = restore(copy)
             temp = f.replace(spr)
             simpl = temp.simplify_dpll()
             result = DPLL_BF(simpl,copy, ostalo, spr)
+    #vrnemo koncno resitev
+    f = restore(copy)
+    temp = f.replace(spr)
+    simpl = temp.simplify_dpll()
+    if simpl==False:
+        return [False, {}]
     return [True, spr]
     
     
+#Pomozna metoda, ki ustvari kopijo formule.
 def copy(f):
     and_list = []
     for i in f.seznam:
@@ -99,6 +113,7 @@ def copy(f):
     copy = bool.AND(and_list)
     return copy
 
+#Pomozna metoda, ki iz kopije ustvari zacetno formulo.
 def restore(copy):
     and_list = []
     for i in copy.seznam:
@@ -140,14 +155,8 @@ def DPLL_sort(f):
             else:
                 f_sorted.insert(pos,i)
     f_cno_sorted = bool.AND(f_sorted)
-   
-    print
-    c = copy(f_cno_sorted)
-##    print "kopija", c
-##    print "formula sorted: ", f_cno_sorted
-    return DPLL_alg(f_cno_sorted,c,{},{}, bool.AND([]))
-
-
+    restore = copy(f_cno_sorted)
+    return DPLL_alg(f_cno_sorted,restore)
 
 #Metoda, ki pozene klic sortiranja (tam pa se pozene algoritem).
 #Argument je formula f v CNO.
@@ -156,31 +165,17 @@ def DPLL(f):
         return {str(f.ime): True}
     elif isinstance(f, bool.NOT):
         return {str(f.vrednost): False}
-    elif isinstance(f, bool.Tru):
+    elif isinstance(f, bool.Tru) or f==True:
         return True
-    elif isinstance(f, bool.Fls):
+    elif isinstance(f, bool.Fls) or f==False:
         return False
-    res = DPLL_sort(f)
-    if res[0]==False:
+    elif len(f.seznam)==0:
         return "Ni resitve."
+    elif len(f.seznam)==1:
+        return DPLL(f.seznam[0])
     else:
-        return res[1]
-
-
-red = __import__('02_redukcija_na_SAT')
-G2 = [['a','b']]
-print G2
-c=2
-G2_SAT = red.barvanje_grafa(G2, c)
-print "G2 SAT"
-print G2_SAT
-print
-G2_SAT_CNO = G2_SAT.cno()
-print "G2_SAT_CNO"
-print G2_SAT_CNO
-print DPLL(G2_SAT_CNO)
-
-##f = bool.AND([bool.Var("p"), bool.Var("q"),bool.OR([bool.Var("p"),bool.NOT(bool.Var("q")), bool.NOT(bool.Var("p"))])])
-##print f
-##print DPLL(f)
-
+        res = DPLL_sort(f)
+        if res[0]==False:
+            return "Ni resitve."
+        else:
+            return res[1]
