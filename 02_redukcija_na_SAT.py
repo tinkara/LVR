@@ -94,44 +94,54 @@ def Sudoku(sud):
 			#za polja, ki se nimajo prednastavljene barve
 			#zagotoviti moramo, da je v polju natanko 1 stevilka
 			if sud[i][j] == None:
-				Or=bool.OR([])
 				for k in range(9):
+					Or=bool.OR([])
+					var=bool.Var("i"+str(i)+"j"+str(j)+"k"+str(k))
+					Or.seznam.append(bool.NOT(var))
 					And=bool.AND([])
 					for l in range(9):
 						#nasa spremenljivka je x_ijk, ki jo tu predstavimo z i_j_k_, kjer so v _ vrednosti od 1-9 in predstavljajo
 						#(i,j) koordinata v sudoku, k stevilo v polju
-						var=bool.Var("i"+str(i+1)+"j"+str(j+1)+"k"+str(k+1))
+						var=bool.Var("i"+str(i)+"j"+str(j)+"k"+str(l))
 						
 						And.seznam.append(var if k==l else bool.NOT(var))
 					Or.seznam.append(And)
-				seznam.append(Or)
+					seznam.append(Or)
+				Or=bool.OR([])
+				for k in range(9):
+					var=bool.Var("i"+str(i)+"j"+str(j)+"k"+str(k))
+					Or.seznam.append(var)
+				seznam.append(Or)	
 			#za prednastavljena polja negiramo tiste barve, ki niso k (k je dolocen)
 			else:
 				col=sud[i][j]
 				for k_1 in range(9):
-					var=bool.Var("i"+str(i+1)+"j"+str(j+1)+"k"+str(k_1+1))
-					seznam.append(var if col==k_1+1 else bool.NOT(var))
+					var=bool.Var("i"+str(i)+"j"+str(j)+"k"+str(k_1))
+					if col==k_1+1:
+						seznam.append(var)
+					else:
+						seznam.append(bool.NOT(var))
 			
 			#v vsakem stolpcu morajo biti natanko stevila od 1 do 9
 			Or=bool.OR([])
 			for k in range(9):
-				Or.seznam.append(bool.Var("i"+str(k+1)+"j"+str(j+1)+"k"+str(i+1)))
+				Or.seznam.append(bool.Var("i"+str(k)+"j"+str(j)+"k"+str(i)))
 			seznam.append(Or)
 			
 			#v vsaki vrstici morajo biti natanko stevila od 1 do 9
 			Or=bool.OR([])
 			for k in range(9):
-				Or.seznam.append(bool.Var("i"+str(j+1)+"j"+str(k+1)+"k"+str(i+1)))
+				Or.seznam.append(bool.Var("i"+str(j)+"j"+str(k)+"k"+str(i)))
 			seznam.append(Or)
 		
 		#vsak 3x3 podkvadrat mora vsebovati natanko stevila od 1 do 9
 		for j in range(3):
 			for k in range(3):
-				Or=bool.OR([])
+				Or_3x3=bool.OR([])
 				for l in range(3):
 					for m in range(3):
-						Or.seznam.append(bool.Var("i"+str(3*j+m+1)+"j"+str(3*k+l+1)+"k"+str(i+1)))
-				seznam.append(Or)
+						Or_3x3.seznam.append(bool.Var("i"+str(3*j+m)+"j"+str(3*k+l)+"k"+str(i)))
+				seznam.append(Or_3x3)
 	return bool.AND(seznam)
 	
 sudo = \
@@ -145,8 +155,8 @@ sudo = \
  [None, None, '6', '7',   None, '1', '9',   None, '3' ],
  ['7',  None, None, None, '9',  '6',  None, '4',  None]]
 
-##sudoku_formula = Sudoku(sudo)
+#sudoku_formula = Sudoku(sudo)
 ##
-##print sudoku_formula.__repr__()
+#print sudoku_formula.__repr__()
 
 

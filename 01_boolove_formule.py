@@ -479,6 +479,14 @@ class Var:
     def simplify(self):
     	return self
 
+class EQ:
+	def __init(self,p,q):
+		self.p=p
+		self.q=q
+	def __repr__(self):
+		return AND([OR([NOT(self.p),self.q]),OR(NOT(self.q),self.p)]).__repr__()
+	def evaluate(self):
+		return AND([OR([NOT(self.p),self.q]),OR(NOT(self.q),self.p)]).evaluate()
 
 #test izpisov
 #testni primer za poenostavljanje

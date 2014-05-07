@@ -8,6 +8,7 @@ except NameError:
     basestring = str
 bool = __import__ ('01_boolove_formule')
 red = __import__('02_redukcija_na_SAT')
+dpll = __import__('03_DPLL')
 
 '''lep izpis sudoka'''
 def Sudoku_print(sudoku):
@@ -29,7 +30,11 @@ def Sudoku_print(sudoku):
 	return out
 	
 def Sudoku_solve(sudoku):
-	pass
+	print Sudoku_print(sudoku)
+	sudoku_SAT = red.Sudoku(sudoku)
+	sudoku_SAT_CNO=sudoku_SAT.cno()
+	resitev= dpll.DPLL(sudoku_SAT_CNO)
+	print resitev
 		
 sudoku1 = [[None, 8, None, 1, 6, None, None, None, 7],
 			[1, None, 7, 4, None, 3, 6, None, None],
@@ -51,13 +56,17 @@ sudoku2 = [[None,9,2,3,4,8,1,5,7],
            [1,2,7,8,3,6,4,9,5],
            [3,6,4,9,1,5,2,7,8]]
 
-print Sudoku_print(sudoku2)
+#print Sudoku_print(sudoku2)
 
 sudoku_SAT = red.Sudoku(sudoku2)
-print sudoku_SAT
+#print sudoku_SAT
 
 sudoku_SAT_CNO = sudoku_SAT.cno()
-print sudoku_SAT_CNO
+#print sudoku_SAT_CNO
+
+print Sudoku_solve(sudoku2)
+
+
 
 
 
