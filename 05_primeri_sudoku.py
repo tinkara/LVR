@@ -32,7 +32,9 @@ def Sudoku_print(sudoku):
 def Sudoku_solve(sudoku):
 	print Sudoku_print(sudoku)
 	sudoku_SAT = red.Sudoku(sudoku)
+	#print sudoku_SAT
 	sudoku_SAT_CNO=sudoku_SAT.cno()
+	#print sudoku_SAT_CNO
 	resitev= dpll.DPLL(sudoku_SAT_CNO)
 	print resitev
 		
@@ -55,13 +57,16 @@ sudoku2 = [[None,9,2,3,4,8,1,5,7],
            [9,5,8,4,7,2,3,6,1],
            [1,2,7,8,3,6,4,9,5],
            [3,6,4,9,1,5,2,7,8]]
+sudo2= \
+[[None,'2','3'],['2','3','1'],['3','1','2']]
+
 
 #print Sudoku_print(sudoku2)
 
-sudoku_SAT = red.Sudoku(sudoku2)
+#sudoku_SAT = red.Sudoku(sudo2)
 #print sudoku_SAT
 
-sudoku_SAT_CNO = sudoku_SAT.cno()
+#sudoku_SAT_CNO = sudoku_SAT.cno()
 #print sudoku_SAT_CNO
 
 print Sudoku_solve(sudoku2)

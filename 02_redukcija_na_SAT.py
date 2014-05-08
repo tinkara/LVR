@@ -78,63 +78,75 @@ def barvanje_grafa(graf, c):
 
 #Sudoku
 def Sudoku(sud):
-	
+	n=9
 	#preverimo, da smo dobili sudoku pravilne dimenzije
-	assert len(sud)==9 ,"Sudoku ni prave dimenzije"
-	for i in range(9):
-		assert len(sud[i])==9, "Sudoku ni prave dimenzije"
+	assert len(sud)==n ,"Sudoku ni prave dimenzije"
+	for i in range(n):
+		assert len(sud[i])==n, "Sudoku ni prave dimenzije"
 	
 	#sestavili bomo seznam formul, ki morajo veljati
 	seznam=[]
 	
-	
-	for i in range(9):
-		for j in range(9):
+	for i in range(n):
+		for j in range(n):
 			
 			#za polja, ki se nimajo prednastavljene barve
 			#zagotoviti moramo, da je v polju natanko 1 stevilka
 			if sud[i][j] == None:
-				for k in range(9):
+				for k in range(n):
 					Or=bool.OR([])
 					var=bool.Var("i"+str(i)+"j"+str(j)+"k"+str(k))
 					Or.seznam.append(bool.NOT(var))
 					And=bool.AND([])
-					for l in range(9):
+					for l in range(n):
 						#nasa spremenljivka je x_ijk, ki jo tu predstavimo z i_j_k_, kjer so v _ vrednosti od 1-9 in predstavljajo
 						#(i,j) koordinata v sudoku, k stevilo v polju
 						var=bool.Var("i"+str(i)+"j"+str(j)+"k"+str(l))
-						
-						And.seznam.append(var if k==l else bool.NOT(var))
+						if k==l:
+							And.seznam.append(var)
+						else:
+							And.seznam.append(bool.NOT(var))
+						#And.seznam.append(var if k==l else bool.NOT(var))
 					Or.seznam.append(And)
 					seznam.append(Or)
 				Or=bool.OR([])
-				for k in range(9):
+				for k in range(n):
 					var=bool.Var("i"+str(i)+"j"+str(j)+"k"+str(k))
 					Or.seznam.append(var)
 				seznam.append(Or)	
 			#za prednastavljena polja negiramo tiste barve, ki niso k (k je dolocen)
 			else:
 				col=sud[i][j]
-				for k_1 in range(9):
+				for k_1 in range(n):
 					var=bool.Var("i"+str(i)+"j"+str(j)+"k"+str(k_1))
-					if col==k_1+1:
+					temp=k_1+1
+					if str(col)==str(temp):
 						seznam.append(var)
 					else:
 						seznam.append(bool.NOT(var))
 			
 			#v vsakem stolpcu morajo biti natanko stevila od 1 do 9
 			Or=bool.OR([])
-			for k in range(9):
+			dodaj=1
+			for k in range(n):
+				if str(sud[k][j]==str(i+1)):
+					dodaj=0
 				Or.seznam.append(bool.Var("i"+str(k)+"j"+str(j)+"k"+str(i)))
-			seznam.append(Or)
+			if dodaj==1:
+				seznam.append(Or)
 			
 			#v vsaki vrstici morajo biti natanko stevila od 1 do 9
 			Or=bool.OR([])
-			for k in range(9):
+			dodaj=1
+			for k in range(n):
+				if str(sud[j][k]==str(i+1)):
+					dodaj=0
 				Or.seznam.append(bool.Var("i"+str(j)+"j"+str(k)+"k"+str(i)))
-			seznam.append(Or)
+			if dodaj==1:
+				seznam.append(Or)
 		
 		#vsak 3x3 podkvadrat mora vsebovati natanko stevila od 1 do 9
+		'''
 		for j in range(3):
 			for k in range(3):
 				Or_3x3=bool.OR([])
@@ -142,6 +154,7 @@ def Sudoku(sud):
 					for m in range(3):
 						Or_3x3.seznam.append(bool.Var("i"+str(3*j+m)+"j"+str(3*k+l)+"k"+str(i)))
 				seznam.append(Or_3x3)
+				'''
 	return bool.AND(seznam)
 	
 sudo = \
@@ -155,7 +168,10 @@ sudo = \
  [None, None, '6', '7',   None, '1', '9',   None, '3' ],
  ['7',  None, None, None, '9',  '6',  None, '4',  None]]
 
-#sudoku_formula = Sudoku(sudo)
+sudo2= \
+[[None,'2','3'],['2','3','1'],['3','1','2']]
+
+#sudoku_formula = Sudoku(sudo2)
 ##
 #print sudoku_formula.__repr__()
 
