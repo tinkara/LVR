@@ -124,6 +124,17 @@ def Sudoku(sud):
 						seznam.append(var)
 					else:
 						seznam.append(bool.NOT(var))
+				#negiranje polj v kvadratu 3x3
+				#najdemo levi zgornji kot kvadrata 3x3
+				x_m=(i/3)*3
+				y_m=(j/3)*3
+				#seznam.append("zacetek")
+				for m in range(3):
+					for n in range(3):
+						var=bool.Var("i"+str(x_m+m)+"j"+str(y_m+n)+"k"+str(col-1))
+						if(x_m+m !=i or y_m+n !=j):
+							seznam.append(bool.NOT(var))
+				#seznam.append("konec")
 			
 			#v vsakem stolpcu morajo biti natanko stevila od 1 do 9
 			Or=bool.OR([])
@@ -145,16 +156,20 @@ def Sudoku(sud):
 			if dodaj==1:
 				seznam.append(Or)
 		
-		#vsak 3x3 podkvadrat mora vsebovati natanko stevila od 1 do 9
 		'''
+		#vsak 3x3 podkvadrat mora vsebovati natanko stevila od 1 do 9
 		for j in range(3):
 			for k in range(3):
 				Or_3x3=bool.OR([])
+				dodaj=1
 				for l in range(3):
 					for m in range(3):
+						if str(sud[3*j+m][3*k+l]==str(i+1)):
+							dodaj=0
 						Or_3x3.seznam.append(bool.Var("i"+str(3*j+m)+"j"+str(3*k+l)+"k"+str(i)))
-				seznam.append(Or_3x3)
-				'''
+				if dodaj==1:
+					seznam.append(Or_3x3)
+					'''
 	return bool.AND(seznam)
 	
 sudo = \
