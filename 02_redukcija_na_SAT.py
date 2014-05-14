@@ -153,20 +153,29 @@ def Sudoku(sud):
 				Or.seznam.append(bool.Var("i"+str(j)+"j"+str(k)+"k"+str(i)))
 			if dodaj==1:
 				seznam.append(Or)
-		
 	#vsak 3x3 podkvadrat mora vsebovati natanko stevila od 1 do 9
+	#vsaka barva
 	for i in range(n):
+		#kvadrant
 		for j in range(3):
 			for k in range(3):
-				Or_3x3=bool.OR([])
-				dodaj=1
-				for l in range(3):
-					for m in range(3):
-						if str(sud[3*j+m][3*k+l]==str(i+1)):
-							dodaj=0
-						Or_3x3.seznam.append(bool.Var("i"+str(3*j+m)+"j"+str(3*k+l)+"k"+str(i)))
-				#if dodaj==1:
-				seznam.append(Or_3x3)
+				#za vsako spr
+				for s1 in range (3):
+					for s2 in range (3):
+						OrSpr=bool.OR([])
+						varAnd=bool.Var("i"+str(3*j+s1)+"j"+str(3*k+s2)+"k"+str(i))
+						OrSpr.seznam.append(bool.NOT(varAnd))
+						And_3x3=bool.AND([])
+						
+						for l in range(3):
+							for m in range(3):
+								if str(sud[3*j+m][3*k+l]==str(i+1)):
+									if ((3*j+m)==(3*j+s1) and (3*k+l)==(3*k+s2)):
+										And_3x3.seznam.append(bool.Var("i"+str(3*j+m)+"j"+str(3*k+l)+"k"+str(i)))
+									else:
+										And_3x3.seznam.append(bool.NOT(bool.Var("i"+str(3*j+m)+"j"+str(3*k+l)+"k"+str(i))))
+						OrSpr.seznam.append(And_3x3)
+						seznam.append(OrSpr)
 	return bool.AND(seznam)
 	
 sudo = \

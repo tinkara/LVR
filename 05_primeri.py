@@ -184,6 +184,9 @@ print "Formula 4 v CNO", f4_cno
 print "Resitev 4:", res4
 print
 
+cno=cikel_sat.cno()
+dpll.DPLL(cno)
+
 
 
 
