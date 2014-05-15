@@ -133,7 +133,7 @@ def Sudoku(sud):
 					var2=bool.Var("i"+str(k_1)+"j"+str(j)+"k"+str(col-1))
 					if(i!=k_1):
 						seznam.append(bool.NOT(var2))
-						'''
+						
 			#v vsakem stolpcu morajo biti natanko stevila od 1 do 9
 			Or=bool.OR([])
 			dodaj=1
@@ -153,6 +153,38 @@ def Sudoku(sud):
 				Or.seznam.append(bool.Var("i"+str(j)+"j"+str(k)+"k"+str(i)))
 			if dodaj==1:
 				seznam.append(Or)
+			'''
+	#seznam.append("zacetek")
+	#vsaka vrstica mora vsebovati natanko stevila od 1 do 9
+	#vsaka barva
+	for i in range(n):
+		#za vsako spr
+		for s1 in range(n):
+			for s2 in range(n):
+				Or_vrst=bool.OR([])
+				Or_stolp=bool.OR([])
+				varAnd=bool.Var("i"+str(s1)+"j"+str(s2)+"k"+str(i))
+				Or_vrst.seznam.append(bool.NOT(varAnd))
+				Or_stolp.seznam.append(bool.NOT(varAnd))
+				And_vrst=bool.AND([])
+				And_stolp=bool.AND([])
+				for j in range(n):
+					#stolpec
+					if(s2==j):
+						And_stolp.seznam.append(bool.Var("i"+str(s1)+"j"+str(j)+"k"+str(i)))
+					else:
+						And_stolp.seznam.append(bool.NOT(bool.Var("i"+str(s1)+"j"+str(j)+"k"+str(i))))
+					#vrstica
+					if(s1==j):
+						And_vrst.seznam.append(bool.Var("i"+str(j)+"j"+str(s2)+"k"+str(i)))
+					else:
+						And_vrst.seznam.append(bool.NOT(bool.Var("i"+str(j)+"j"+str(s2)+"k"+str(i))))
+				Or_vrst.seznam.append(And_vrst)
+				Or_stolp.seznam.append(And_stolp)
+				seznam.append(Or_vrst)
+				seznam.append(Or_stolp)
+	#seznam.append("konec")
+						
 	#vsak 3x3 podkvadrat mora vsebovati natanko stevila od 1 do 9
 	#vsaka barva
 	for i in range(n):

@@ -109,11 +109,21 @@ sudoku3 = [[None,9,2,3,4,8,1,5,7],
            [9,5,8,4,7,2,3,None,1],
            [1,2,7,8,3,None,4,9,5],
            [3,None,4,9,1,5,2,7,8]]
+           
+sudoku4 =[[None,None,None,3,4,8,1,5,7],
+           [None,None,None,5,6,1,9,8,2],
+           [None,None,None,2,9,7,6,3,4],
+           [5,8,6,1,2,3,7,4,9],
+           [4,3,1,7,8,9,5,2,6],
+           [2,7,9,6,5,4,8,1,3],
+           [9,5,8,4,7,2,3,6,1],
+           [1,2,7,8,3,6,4,9,5],
+           [3,6,4,9,1,5,2,7,8]]
 
 
 '''TUKAJ vnesemo sudoku, ki ga zelimo resiti'''
 
-Sudoku_solve(sudoku2)
+Sudoku_solve(sudoku3)
 
 
 
