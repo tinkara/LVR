@@ -24,12 +24,25 @@ V repozitoriju se nahajajo naslednje datoteke:
  
 - 05_primeri.py: tu se nahaja prikaz uporabe vseh struktur ter klice metod in algoritma DPLL
 
-- 05_primeri_sudoku.py: datoteka, ki na lep nacin izpise sudoku
+- 05_primeri_sudoku.py: datoteka, s katero prikažemo reševanje sudoka z DPLL algoritmom
 
 NAVODILA ZA UPORABO:
 
 Kako se ustvari konstanto, spremenljivko ali kateri koli drugi tip je prikazano v datoteki 05_primeri. Tu se nahajajo osnove kako uporabljati strukture in klicati metode ter DPLL algoritem.
 
+Za pregled delovanja DPLL algoritma na primeru sudoka je potrebno odpreti 05_primeri_sudoku.py in v spodnji vrstici izprati sudoku, ki ga želimo rešiti.
+Za vnos novega sudoka je potrebno vnesti 
+sudoku_x = [[None,9,2,3,4,8,1,5,7],
+           [7,4,3,5,None,1,9,8,2],
+           [8,1,5,2,9,7,None,3,4],
+           [5,8,None,1,2,3,7,4,9],
+           [4,3,1,7,8,9,5,2,None],
+           [2,7,9,None,5,4,8,1,3],
+           [9,5,8,4,7,2,3,None,1],
+           [1,2,7,8,3,None,4,9,5],
+           [3,None,4,9,1,5,2,7,8]]
+(kjer je x poljubna še ne uporabljena številka), nato pa ime sudoka vpišemo v zadnjo vrstico (Sudoku_solve(sudoku_x)) in poženemo program.
+Iz neznanega razloga sudoku4 ne vrne prave rešitve, ostali pa se rešijo pravilno, pri tem, da sudoku3 za rešitev potrebuje malce več časa.
 
 UNITTEST:
 
